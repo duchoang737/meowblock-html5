@@ -354,28 +354,29 @@ function Blossom({
   theme,
   slot,
   seed,
+  widthCells,
 }: {
   theme: FlowerThemeKey;
   slot: number;
   seed: number;
+  widthCells: number;
 }) {
-  const positions = [
-    { left: 27, top: 31, size: 35 },
-    { left: 70, top: 38, size: 30 },
-    { left: 50, top: 72, size: 33 },
-  ];
-  const position = positions[slot % positions.length];
+  const random = mulberry32(seed + 0x9e3779b9);
+  const left = 7 + random() * 86;
+  const top = 7 + random() * 86;
+  const size = (28 + random() * 14) / widthCells;
+  const spin = -28 + random() * 56;
   const outerCount =
     theme === "silk" ? 5 : theme === "cosmos" ? 8 : theme === "jewel" ? 10 : 7;
   const outerRadius = theme === "cosmos" ? 6.1 : theme === "jewel" ? 6.3 : 5;
   const outerRy = theme === "cosmos" ? 6.4 : theme === "jewel" ? 4.7 : 5.8;
   const outerRx = theme === "cosmos" ? 2.4 : theme === "jewel" ? 2.3 : 3.5;
   const style = {
-    left: `${position.left + ((seed % 3) - 1) * 2}%`,
-    top: `${position.top + ((seed % 5) - 2)}%`,
-    width: `${position.size + (seed % 3) * 2}%`,
-    "--flower-delay": `${slot * 45}ms`,
-    "--flower-spin": `${(seed % 31) - 15}deg`,
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${size}%`,
+    "--flower-delay": `${(slot % 18) * 28}ms`,
+    "--flower-spin": `${spin}deg`,
   } as CSSProperties;
 
   const ring = (
@@ -794,6 +795,7 @@ export function MeowBlockGame() {
                   {blocks.map((block, blockIndex) => {
                     const width = block.rect.right - block.rect.left + 1;
                     const height = block.rect.bottom - block.rect.top + 1;
+                    const flowerCount = width * height * 3;
                     return (
                       <span
                         className="block-plot"
@@ -806,7 +808,21 @@ export function MeowBlockGame() {
                           width: `calc(${(width / level.cols) * 100}% - 6px)`,
                           height: `calc(${(height / level.rows) * 100}% - 6px)`,
                         } as CSSProperties}
-                      />
+                      >
+                        {Array.from({ length: flowerCount }, (_, slot) => (
+                          <Blossom
+                            key={slot}
+                            theme={flowerTheme.key}
+                            slot={slot}
+                            seed={
+                              Math.abs(level.id) * 1009 +
+                              blockIndex * 97 +
+                              slot * 31
+                            }
+                            widthCells={width}
+                          />
+                        ))}
+                      </span>
                     );
                   })}
                 </span>
@@ -855,18 +871,6 @@ export function MeowBlockGame() {
                             } as CSSProperties
                           : undefined}
                       >
-                        {owner >= 0 && (
-                          <span className="cell-flowers" aria-hidden="true">
-                            {[0, 1, 2].map((slot) => (
-                              <Blossom
-                                key={slot}
-                                theme={flowerTheme.key}
-                                slot={slot}
-                                seed={index * 11 + owner * 7 + slot * 3}
-                              />
-                            ))}
-                          </span>
-                        )}
                         {clue && <span className="clue-value">{label}</span>}
                       </div>
                     );

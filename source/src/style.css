@@ -273,14 +273,9 @@ button { font: inherit; }
   font-size: clamp(9px, 3vw, 15px);
   line-height: 1;
 }
-.cell-flowers {
-  position: absolute;
-  inset: 0;
-  z-index: 8;
-  pointer-events: none;
-}
 .flower-head {
   position: absolute;
+  z-index: 2;
   aspect-ratio: 1;
   color: var(--flower);
   filter: drop-shadow(0 1px 1px rgb(37 31 27 / 20%));

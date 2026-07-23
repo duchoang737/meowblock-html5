@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4efe9" />
+  <title>MeowBlock — 4 demo chỉ có bông hoa</title>
+  <style>
+    :root { --ink: #302a33; --muted: #766f77; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 7% 5%, rgb(255 255 255 / 78%) 0 4px, transparent 5px),
+        linear-gradient(145deg, #fbf7f1, #e8dfd5);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 28px)); margin: auto; padding: 42px 0 72px; }
+    header { max-width: 830px; margin-bottom: 28px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #a96b53;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2.3px;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(38px, 6vw, 66px); line-height: .98; letter-spacing: -3px; }
+    header > p:last-of-type { max-width: 730px; color: var(--muted); line-height: 1.65; }
+    .rules { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
+    .rule {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 5px 15px rgb(73 48 27 / 8%);
+      color: #665e67;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .card {
+      --accent: #d96675;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid rgb(75 52 35 / 8%);
+      border-radius: 31px;
+      background: #fffdf9;
+      box-shadow: 0 20px 58px rgb(67 48 28 / 11%);
+    }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+    .index {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 1000;
+    }
+    h2 { margin: 12px 0 4px; font-size: 27px; letter-spacing: -1px; }
+    .copy { max-width: 355px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      color: color-mix(in srgb, var(--accent) 76%, #322832);
+      font-size: 10px;
+      font-weight: 1000;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .stage {
+      position: relative;
+      min-height: 410px;
+      margin-top: 19px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 25px;
+      background:
+        radial-gradient(ellipse at 10% 100%, #8db76d 0 17%, transparent 17.5%),
+        linear-gradient(#e4f3fa 0 47%, #d9e9ca 48%);
+    }
+    .board {
+      position: relative;
+      width: min(88%, 340px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      padding: 4px;
+      overflow: hidden;
+      border: 3px solid #4d474e;
+      border-radius: 17px;
+      background: rgb(255 255 255 / 55%);
+      box-shadow: 0 17px 36px rgb(48 36 27 / 17%);
+    }
+    .cell {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgb(255 255 255 / 76%);
+      color: #403a42;
+      box-shadow: inset 0 -3px 7px rgb(90 74 70 / 5%);
+      font-size: 17px;
+      font-weight: 1000;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .cell.filled {
+      color: transparent;
+      background:
+        radial-gradient(circle at 24% 22%, rgb(255 255 255 / 18%) 0 2px, transparent 2.5px),
+        var(--tile);
+      box-shadow:
+        inset 0 -6px 10px color-mix(in srgb, var(--tile) 76%, #4f4540),
+        0 2px 4px rgb(49 41 34 / 12%);
+    }
+    .clue {
+      position: absolute;
+      z-index: 40;
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgb(255 255 255 / 90%);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--tile) 58%, white);
+      color: #302b33;
+      box-shadow: 0 3px 8px rgb(33 27 31 / 28%);
+      font-size: 13px;
+      font-weight: 1000;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .blossom {
+      --flower: #ed6e86;
+      --size: 20px;
+      --spin: 0deg;
+      position: absolute;
+      z-index: 10;
+      width: var(--size);
+      height: var(--size);
+      color: var(--flower);
+      pointer-events: none;
+      filter: drop-shadow(0 2px 1px rgb(35 31 27 / 18%));
+      transform: translate(-50%, -50%) scale(0) rotate(var(--spin));
+      animation: pop .54s cubic-bezier(.14,.82,.22,1.3) forwards;
+    }
+    .blossom svg { width: 100%; height: 100%; overflow: visible; }
+    .petal {
+      fill: currentColor;
+      stroke: color-mix(in srgb, currentColor 78%, #49343c);
+      stroke-width: .38;
+    }
+    .petal-soft { fill: currentColor; opacity: .7; }
+    .center {
+      fill: color-mix(in srgb, currentColor 58%, #473339);
+      stroke: color-mix(in srgb, currentColor 70%, white);
+      stroke-width: .65;
+    }
+    .detail {
+      fill: none;
+      stroke: color-mix(in srgb, currentColor 60%, white);
+      stroke-width: .55;
+      stroke-linecap: round;
+      opacity: .8;
+    }
+    .silk { --accent: #d96879; }
+    .cosmos { --accent: #df8350; }
+    .jewel { --accent: #6c77cb; }
+    .moon {
+      --accent: #9b69ff;
+      color: #f3efff;
+      background: #171527;
+      border-color: rgb(150 105 255 / 20%);
+    }
+    .moon .copy { color: #aca7bd; }
+    .moon .tag { color: #d3b8ff; background: rgb(153 101 255 / 15%); }
+    .moon .stage {
+      background:
+        radial-gradient(circle at 82% 16%, #fffbdc 0 28px, #c7c5e7 29px 32px, transparent 33px),
+        radial-gradient(circle at 15% 20%, rgb(157 111 255 / 25%) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 72% 72%, rgb(117 207 255 / 20%) 0 1.5px, transparent 2.5px),
+        linear-gradient(145deg, #0e1023, #252044);
+    }
+    .moon .board {
+      border-color: #78709b;
+      background: rgb(13 15 35 / 76%);
+      box-shadow: 0 0 31px rgb(151 94 255 / 20%);
+    }
+    .moon .cell {
+      background: rgb(37 36 64 / 88%);
+      color: #eee9ff;
+      box-shadow: inset 0 0 9px rgb(142 101 230 / 7%);
+    }
+    .moon .cell.filled {
+      background: var(--tile);
+      box-shadow: inset 0 -7px 12px rgb(0 0 0 / 28%), 0 0 7px color-mix(in srgb, var(--flower) 35%, transparent);
+    }
+    .moon .blossom {
+      filter:
+        drop-shadow(0 0 2px currentColor)
+        drop-shadow(0 0 5px currentColor)
+        drop-shadow(0 0 9px color-mix(in srgb, currentColor 75%, transparent));
+    }
+    .moon .petal { fill: rgb(255 255 255 / 10%); stroke: currentColor; stroke-width: 1.05; }
+    .moon .center { fill: currentColor; stroke: white; }
+    .moon .clue {
+      color: white;
+      border-color: color-mix(in srgb, var(--flower) 58%, white);
+      background: #19172d;
+      box-shadow: 0 0 8px var(--flower);
+    }
+    .actions { display: grid; grid-template-columns: 1fr 50px; gap: 10px; margin-top: 16px; }
+    .grow, .reset {
+      min-height: 50px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 1000;
+    }
+    .grow { color: white; background: var(--accent); box-shadow: 0 6px 0 color-mix(in srgb, var(--accent) 70%, #42303a); }
+    .reset { color: #665f67; background: #f2ebe4; font-size: 19px; }
+    .moon .reset { color: #ded7f3; background: #29263e; }
+    .note { margin: 12px 0 0; color: #8b838a; text-align: center; font-size: 11px; }
+    .moon .note { color: #918aa7; }
+    @keyframes pop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.05) rotate(calc(var(--spin) - 18deg)); }
+      67% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(calc(var(--spin) + 3deg)); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(var(--spin)); }
+    }
+    @media (max-width: 820px) { .gallery { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">MeowBlock · Blossom study 13–16</p>
+      <h1>Chỉ còn những bông hoa.</h1>
+      <p>
+        Đã bỏ toàn bộ thân và lá. Hoa mọc dày hơn trên từng ô nền bo góc tách nhẹ giống mẫu bạn gửi.
+        Mỗi block vẫn có màu đất riêng, một màu hoa riêng và số điều kiện luôn nằm trên cùng.
+      </p>
+      <div class="rules">
+        <span class="rule">Không thân, không lá</span>
+        <span class="rule">Hoa mọc dày hơn</span>
+        <span class="rule">Từng ô nền bo góc</span>
+        <span class="rule">Số điều kiện không bị che</span>
+      </div>
+    </header>
+
+    <section class="gallery">
+      <article class="card silk" data-theme="silk">
+        <div class="card-head"><div><span class="index">13</span><h2>Thảm Hoa Lụa</h2><p class="copy">Hoa tròn năm cánh xếp hai lớp, mềm và đầy đặn như những nút lụa nhỏ.</p></div><span class="tag">Soft</span></div>
+        <div class="stage"><div class="board" aria-label="Demo thảm hoa lụa"></div></div>
+        <div class="actions"><button class="grow">Cho hoa mọc dày</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Nhiều hoa hơn · Chỉ có đầu hoa, không có thân lá</p>
+      </article>
+
+      <article class="card cosmos" data-theme="cosmos">
+        <div class="card-head"><div><span class="index">14</span><h2>Vườn Sao Cánh Dài</h2><p class="copy">Cánh hoa dài và thanh, tạo khoảng thở dù số lượng bông nhiều hơn.</p></div><span class="tag">Airy</span></div>
+        <div class="stage"><div class="board" aria-label="Demo vườn sao cánh dài"></div></div>
+        <div class="actions"><button class="grow">Cho hoa mọc dày</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Dáng hoa nhẹ · Các bông xoay ngẫu nhiên tự nhiên</p>
+      </article>
+
+      <article class="card jewel" data-theme="jewel">
+        <div class="card-head"><div><span class="index">15</span><h2>Hoa Ngọc Nhiều Tầng</h2><p class="copy">Ba vòng cánh nhỏ tạo hình như viên ngọc, nhìn rõ ngay cả khi hoa mọc dày.</p></div><span class="tag">Rich</span></div>
+        <div class="stage"><div class="board" aria-label="Demo hoa ngọc nhiều tầng"></div></div>
+        <div class="actions"><button class="grow">Cho hoa mọc dày</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Cánh nhiều tầng · Kích thước lớn nhỏ xen kẽ</p>
+      </article>
+
+      <article class="card moon" data-theme="moon">
+        <div class="card-head"><div><span class="index">16</span><h2>Vườn Trăng</h2><p class="copy">Huyền ảo, tương phản cao, hoa tím phát sáng dưới trăng.</p></div><span class="tag">Moonlight</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Vườn Trăng"></div></div>
+        <div class="actions"><button class="grow">Đánh thức Vườn Trăng</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Hoa tím phát quang · Nền đêm và mặt trăng tương phản cao</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const layouts = [
+      { clue: 4, clueCell: 0, left: 0, top: 0, width: 2, height: 2 },
+      { clue: 6, clueCell: 3, left: 2, top: 0, width: 3, height: 2 },
+      { clue: 15, clueCell: 17, left: 0, top: 2, width: 5, height: 3 }
+    ];
+    const palettes = {
+      silk: [
+        { tile: '#8eb96a', flower: '#f2b633' },
+        { tile: '#c49a72', flower: '#df6887' },
+        { tile: '#74a69b', flower: '#806bc9' }
+      ],
+      cosmos: [
+        { tile: '#91b16c', flower: '#dc7147' },
+        { tile: '#b89570', flower: '#d85c7b' },
+        { tile: '#6e9f93', flower: '#755fc1' }
+      ],
+      jewel: [
+        { tile: '#88ad68', flower: '#e27b43' },
+        { tile: '#bd926e', flower: '#d95980' },
+        { tile: '#729b94', flower: '#7563c7' }
+      ],
+      moon: [
+        { tile: '#22264c', flower: '#ae72ff' },
+        { tile: '#34234f', flower: '#d15cff' },
+        { tile: '#183d49', flower: '#8b7aff' }
+      ]
+    };
+
+    function ellipses(count, radius, ry, rx, className = 'petal') {
+      return Array.from({ length: count }, (_, index) => {
+        const angle = index * 360 / count;
+        return `<ellipse class="${className}" cx="16" cy="${16 - radius}" rx="${rx}" ry="${ry}" transform="rotate(${angle} 16 16)"/>`;
+      }).join('');
+    }
+
+    function blossomSvg(theme) {
+      if (theme === 'cosmos') {
+        return `<svg viewBox="0 0 32 32" aria-hidden="true">
+          ${ellipses(8, 6.1, 6.3, 2.5)}
+          <circle class="center" cx="16" cy="16" r="3"/>
+          <circle class="detail" cx="16" cy="16" r="1.2"/>
+        </svg>`;
+      }
+      if (theme === 'jewel') {
+        return `<svg viewBox="0 0 32 32" aria-hidden="true">
+          ${ellipses(10, 6.4, 4.7, 2.35, 'petal-soft')}
+          ${ellipses(8, 4.2, 3.8, 2.05)}
+          ${ellipses(6, 2.5, 2.6, 1.55)}
+          <circle class="center" cx="16" cy="16" r="2.1"/>
+        </svg>`;
+      }
+      if (theme === 'moon') {
+        return `<svg viewBox="0 0 32 32" aria-hidden="true">
+          ${ellipses(7, 5.3, 6.1, 3.1)}
+          <circle class="center" cx="16" cy="16" r="2.8"/>
+          <circle class="detail" cx="16" cy="16" r="7"/>
+        </svg>`;
+      }
+      return `<svg viewBox="0 0 32 32" aria-hidden="true">
+        ${ellipses(5, 4.5, 6.4, 4.5, 'petal-soft')}
+        ${ellipses(5, 4.8, 5.3, 3.6)}
+        <circle class="center" cx="16" cy="16" r="3"/>
+        <path class="detail" d="M16 13 L16 10 M18.7 15 L21.5 13.5 M17.8 18.3 L19.5 21 M14.2 18.3 L12.5 21 M13.3 15 L10.5 13.5"/>
+      </svg>`;
+    }
+
+    document.querySelectorAll('.card').forEach((card, cardIndex) => {
+      const board = card.querySelector('.board');
+      const theme = card.dataset.theme;
+      let timers = [];
+
+      for (let index = 0; index < 25; index++) {
+        const cell = document.createElement('div');
+        const clueBlock = layouts.find(block => block.clueCell === index);
+        cell.className = 'cell';
+        if (clueBlock) cell.textContent = clueBlock.clue;
+        board.appendChild(cell);
+      }
+
+      function cellsOf(block) {
+        const result = [];
+        for (let row = block.top; row < block.top + block.height; row++) {
+          for (let col = block.left; col < block.left + block.width; col++) result.push(row * 5 + col);
+        }
+        return result;
+      }
+
+      function addBlossom(block, style, order, blockIndex) {
+        const flower = document.createElement('div');
+        const margin = .11;
+        const x = block.left + margin + Math.random() * (block.width - margin * 2);
+        const y = block.top + margin + Math.random() * (block.height - margin * 2);
+        flower.className = 'blossom';
+        flower.innerHTML = blossomSvg(theme);
+        flower.style.left = `${x * 20}%`;
+        flower.style.top = `${y * 20}%`;
+        flower.style.setProperty('--flower', style.flower);
+        flower.style.setProperty('--size', `${theme === 'moon' ? 17 + Math.random() * 9 : 15 + Math.random() * 9}px`);
+        flower.style.setProperty('--spin', `${Math.random() * 50 - 25}deg`);
+        flower.style.animationDelay = `${order * 24 + blockIndex * 75 + Math.random() * 65}ms`;
+        board.appendChild(flower);
+      }
+
+      function fillBlock(block, blockIndex) {
+        const style = palettes[theme][blockIndex];
+        cellsOf(block).forEach(index => {
+          board.children[index].classList.add('filled');
+          board.children[index].style.setProperty('--tile', style.tile);
+          board.children[index].style.setProperty('--flower', style.flower);
+        });
+
+        const density = theme === 'jewel' ? 2.15 : theme === 'moon' ? 2.35 : 2.45;
+        const count = Math.max(9, Math.round(block.width * block.height * density));
+        for (let index = 0; index < count; index++) addBlossom(block, style, index, blockIndex);
+
+        const clue = document.createElement('div');
+        clue.className = 'clue';
+        clue.textContent = block.clue;
+        clue.style.setProperty('--tile', style.tile);
+        clue.style.setProperty('--flower', style.flower);
+        clue.style.left = `${((block.clueCell % 5) + .5) * 20}%`;
+        clue.style.top = `${(Math.floor(block.clueCell / 5) + .5) * 20}%`;
+        board.appendChild(clue);
+      }
+
+      function reset() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        board.querySelectorAll('.blossom,.clue').forEach(node => node.remove());
+        board.querySelectorAll('.cell').forEach(cell => {
+          cell.classList.remove('filled');
+          cell.style.removeProperty('--tile');
+          cell.style.removeProperty('--flower');
+        });
+      }
+
+      function grow() {
+        reset();
+        layouts.forEach((block, index) => {
+          timers.push(setTimeout(() => fillBlock(block, index), index * 250));
+        });
+      }
+
+      card.querySelector('.grow').addEventListener('click', grow);
+      card.querySelector('.reset').addEventListener('click', reset);
+      timers.push(setTimeout(grow, 230 + cardIndex * 160));
+    });
+  </script>
+</body>
+</html>

@@ -232,6 +232,8 @@ button { font: inherit; }
   box-shadow:
     inset 0 -7px 11px color-mix(in srgb, var(--tile) 75%, #514640),
     0 2px 4px rgb(49 41 34 / 12%);
+  outline: 2px solid rgb(255 255 255 / 34%);
+  outline-offset: -2px;
 }
 .cell.preview { background: #ffe6ad !important; }
 .cell.blocked {
@@ -310,12 +312,20 @@ button { font: inherit; }
 }
 .theme-moon .cell {
   color: #eee9ff;
-  background: rgb(38 36 65 / 92%);
-  box-shadow: inset 0 0 9px rgb(142 101 230 / 8%);
+  background: #202139;
+  box-shadow:
+    inset 0 0 0 1px #353657,
+    inset 0 -5px 9px rgb(0 0 0 / 17%);
 }
 .theme-moon .cell.filled {
-  background: var(--tile);
-  box-shadow: inset 0 -7px 12px rgb(0 0 0 / 29%), 0 0 6px color-mix(in srgb, var(--flower) 30%, transparent);
+  background:
+    radial-gradient(circle at 23% 20%, rgb(255 255 255 / 22%) 0 2px, transparent 2.8px),
+    linear-gradient(145deg, color-mix(in srgb, var(--tile) 78%, white), var(--tile));
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--tile) 48%, white),
+    inset 0 -8px 13px rgb(0 0 0 / 25%),
+    0 0 10px color-mix(in srgb, var(--flower) 38%, transparent);
+  outline-color: rgb(255 255 255 / 55%);
 }
 .theme-moon .flower-head {
   filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 5px currentColor);

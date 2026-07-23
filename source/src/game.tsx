@@ -66,7 +66,7 @@ const FLOWER_THEMES: FlowerTheme[] = [
   {
     key: "moon",
     name: "Vườn Trăng",
-    tiles: ["#22264c", "#34234f", "#183d49", "#30345b", "#432855", "#17414f"],
+    tiles: ["#4c5496", "#6d4390", "#287786", "#555f9e", "#7a458f", "#267381"],
     flowers: ["#ae72ff", "#d15cff", "#8b7aff", "#c38bff", "#a64cff", "#718dff"],
   },
 ];

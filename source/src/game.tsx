@@ -668,6 +668,8 @@ export function MeowBlockGame() {
   const gridStyle = {
     "--cols": level.cols,
     "--rows": level.rows,
+    width: `${Math.min(1, level.cols / level.rows) * 100}%`,
+    maxWidth: "460px",
   } as CSSProperties;
   const completedPercent = Math.max(1, unlocked - 1);
 

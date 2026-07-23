@@ -48,26 +48,50 @@ const FLOWER_THEMES: FlowerTheme[] = [
   {
     key: "silk",
     name: "Thảm Hoa Lụa",
-    tiles: ["#8eb96a", "#c49a72", "#74a69b", "#aa8caf", "#d3ad72", "#789fbd"],
-    flowers: ["#f2b633", "#df6887", "#806bc9", "#e87953", "#547fd7", "#d85f9f"],
+    tiles: [
+      "#79b85d", "#c99562", "#58a9a0", "#a67fc0", "#d0ad4f", "#5e94c7",
+      "#d2796b", "#65b78d", "#c3789b", "#8773aa", "#9fac58", "#69a9c5",
+    ],
+    flowers: [
+      "#f4c22f", "#e76082", "#775bd0", "#ed754d", "#477bd8", "#d94eaa",
+      "#ffe06b", "#f15f6e", "#8c63e2", "#ef9841", "#4d8ae5", "#df5a91",
+    ],
   },
   {
     key: "cosmos",
     name: "Vườn Sao Cánh Dài",
-    tiles: ["#91b16c", "#b89570", "#6e9f93", "#a58bab", "#c4a665", "#7795b1"],
-    flowers: ["#dc7147", "#d85c7b", "#755fc1", "#e2a536", "#4d8ed1", "#ca61a4"],
+    tiles: [
+      "#84b25d", "#c28b61", "#55a394", "#9a7ab4", "#c8a143", "#5b8eb9",
+      "#ca7064", "#5dad83", "#b96f91", "#7b6b9f", "#94a64c", "#60a1bb",
+    ],
+    flowers: [
+      "#e46c3f", "#dc5278", "#6f58c7", "#e8a52f", "#4187cf", "#d04f9c",
+      "#f0b536", "#e55b67", "#805bd6", "#e88135", "#4b94dc", "#d85688",
+    ],
   },
   {
     key: "jewel",
     name: "Hoa Ngọc Nhiều Tầng",
-    tiles: ["#88ad68", "#bd926e", "#729b94", "#a387ad", "#c5a161", "#708fac"],
-    flowers: ["#e27b43", "#d95980", "#7563c7", "#e3ac35", "#4d91d2", "#c95eaa"],
+    tiles: [
+      "#76ad5d", "#bd865f", "#579c90", "#9674ac", "#c99b42", "#5489b5",
+      "#c96b60", "#58a77f", "#b46990", "#76639c", "#8fa34a", "#5a9db8",
+    ],
+    flowers: [
+      "#e9763b", "#de4f7c", "#6c56ca", "#e6aa2d", "#428bd4", "#cf4da7",
+      "#f1b735", "#e95869", "#8058d8", "#eb8132", "#4d96df", "#d6538d",
+    ],
   },
   {
     key: "moon",
     name: "Vườn Trăng",
-    tiles: ["#4c5496", "#6d4390", "#287786", "#555f9e", "#7a458f", "#267381"],
-    flowers: ["#ae72ff", "#d15cff", "#8b7aff", "#c38bff", "#a64cff", "#718dff"],
+    tiles: [
+      "#4c55a0", "#764398", "#237989", "#3d6ea2", "#8b407c", "#267a6e",
+      "#864b58", "#496f42", "#65539d", "#32688f", "#74448c", "#3f7994",
+    ],
+    flowers: [
+      "#b775ff", "#ec5dff", "#65c9ff", "#8d8aff", "#ff68c9", "#62f0cf",
+      "#ff7694", "#8eff83", "#c68aff", "#64bfff", "#e77aff", "#77ddff",
+    ],
   },
 ];
 const SUCCESS = [

@@ -113,7 +113,7 @@
         radial-gradient(circle at 73% 77%, rgb(50 58 26 / 10%) 0 2px, transparent 2.7px),
         var(--soil);
       box-shadow:
-        inset 0 -12px 18px color-mix(in srgb, var(--soil) 70%, #52663f),
+        inset 0 -12px 18px color-mix(in srgb, var(--soil) 72%, #4b413b),
         0 5px 10px rgb(50 46 31 / 18%);
       pointer-events: none;
     }
@@ -135,7 +135,7 @@
       transform: translate(-50%, -50%);
     }
     .plant {
-      --size: 12px;
+      --size: 16px;
       --flower: #ef6b70;
       --spin: 0deg;
       position: absolute;
@@ -263,6 +263,7 @@
       </p>
       <div class="rules">
         <span class="rule">Block bo góc 20px</span>
+        <span class="rule">Mỗi block có màu đất riêng</span>
         <span class="rule">Một block = một màu hoa</span>
         <span class="rule">Số điều kiện luôn hiển thị</span>
         <span class="rule">Hoa chỉ mọc khi vẽ đúng</span>
@@ -275,7 +276,7 @@
       </div>
       <aside class="panel">
         <h2>Vườn nhiều block</h2>
-        <p>Năm block nằm cạnh nhau nhưng không bị lẫn màu. Thân và lá cùng xanh; chỉ màu cánh hoa thay đổi theo từng block.</p>
+        <p>Năm block nằm cạnh nhau với năm màu đất khác nhau. Mỗi mảnh đất cũng chỉ mọc một màu hoa riêng, hoa lớn hơn và dễ nhìn hơn.</p>
         <div class="legend"></div>
         <div class="actions">
           <button class="grow">Vẽ đúng tất cả & xem hoa</button>
@@ -291,11 +292,11 @@
     const legend = document.querySelector('.legend');
     const size = 6;
     const blocks = [
-      { clue: 6, clueCell: 1, left: 0, top: 0, width: 3, height: 2, flower: '#f0b83e', soil: '#91b85e', name: 'Block vàng' },
-      { clue: 6, clueCell: 4, left: 3, top: 0, width: 3, height: 2, flower: '#df748e', soil: '#75aa68', name: 'Block hồng' },
-      { clue: 8, clueCell: 12, left: 0, top: 2, width: 2, height: 4, flower: '#8e75d2', soil: '#7da86c', name: 'Block tím' },
-      { clue: 8, clueCell: 15, left: 2, top: 2, width: 4, height: 2, flower: '#5f9fd7', soil: '#86b16d', name: 'Block xanh' },
-      { clue: 8, clueCell: 27, left: 2, top: 4, width: 4, height: 2, flower: '#e5764f', soil: '#93ad63', name: 'Block cam' }
+      { clue: 6, clueCell: 1, left: 0, top: 0, width: 3, height: 2, flower: '#f1b832', soil: '#86b961', name: 'Đất cỏ xanh · hoa vàng' },
+      { clue: 6, clueCell: 4, left: 3, top: 0, width: 3, height: 2, flower: '#dc6686', soil: '#c69a68', name: 'Đất nâu mật · hoa hồng' },
+      { clue: 8, clueCell: 12, left: 0, top: 2, width: 2, height: 4, flower: '#8d6bd1', soil: '#6fa89c', name: 'Đất ngọc lam · hoa tím' },
+      { clue: 8, clueCell: 15, left: 2, top: 2, width: 4, height: 2, flower: '#4f96d2', soil: '#b98473', name: 'Đất đỏ nhạt · hoa xanh' },
+      { clue: 8, clueCell: 27, left: 2, top: 4, width: 4, height: 2, flower: '#e56f46', soil: '#9584b2', name: 'Đất tím xám · hoa cam' }
     ];
     let start = null;
     let end = null;
@@ -314,7 +315,7 @@
     blocks.forEach(block => {
       const item = document.createElement('div');
       item.className = 'legend-item';
-      item.innerHTML = `<span class="swatch" style="--color:${block.flower}"></span><span>${block.name} · hoa ${block.flower === '#f0b83e' ? 'vàng' : block.flower === '#df748e' ? 'hồng' : block.flower === '#8e75d2' ? 'tím' : block.flower === '#5f9fd7' ? 'xanh' : 'cam'}</span>`;
+      item.innerHTML = `<span class="swatch" style="--color:${block.soil}"></span><span>${block.name}</span>`;
       legend.appendChild(item);
     });
 
@@ -367,7 +368,7 @@
       const y = block.top + margin + Math.random() * (block.height - margin * 2);
       plant.style.left = `${x / size * 100}%`;
       plant.style.top = `${y / size * 100}%`;
-      plant.style.setProperty('--size', `${8 + Math.random() * 6}px`);
+      plant.style.setProperty('--size', `${12 + Math.random() * 8}px`);
       plant.style.setProperty('--flower', block.flower);
       plant.style.setProperty('--spin', `${-18 + Math.random() * 36}deg`);
       plant.style.animationDelay = `${order * 25 + Math.random() * 70}ms`;
@@ -393,7 +394,7 @@
       plot.style.height = `calc(${block.height * cellWidth}% - 6px)`;
       board.appendChild(plot);
 
-      const count = Math.max(12, block.width * block.height * 3);
+      const count = Math.max(10, Math.round(block.width * block.height * 2.25));
       for (let i = 0; i < count; i++) addPlant(block, i);
 
       const clue = document.createElement('div');

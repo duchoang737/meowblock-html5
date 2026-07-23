@@ -30,11 +30,45 @@ type Level = {
   hard: boolean;
   predict: number;
 };
-type PlacedBlock = { rect: Rect; color: string; answerIndex?: number };
+type FlowerThemeKey = "silk" | "cosmos" | "jewel" | "moon";
+type FlowerTheme = {
+  key: FlowerThemeKey;
+  name: string;
+  tiles: string[];
+  flowers: string[];
+};
+type PlacedBlock = {
+  rect: Rect;
+  color: string;
+  flowerColor: string;
+  answerIndex?: number;
+};
 
-const PALETTE = [
-  "#f47c83", "#ffd84a", "#7192ff", "#55dce0", "#ee8ad7", "#ff9a55",
-  "#bd9476", "#66d887", "#b27be9", "#8d8995", "#f1e7d7",
+const FLOWER_THEMES: FlowerTheme[] = [
+  {
+    key: "silk",
+    name: "Thảm Hoa Lụa",
+    tiles: ["#8eb96a", "#c49a72", "#74a69b", "#aa8caf", "#d3ad72", "#789fbd"],
+    flowers: ["#f2b633", "#df6887", "#806bc9", "#e87953", "#547fd7", "#d85f9f"],
+  },
+  {
+    key: "cosmos",
+    name: "Vườn Sao Cánh Dài",
+    tiles: ["#91b16c", "#b89570", "#6e9f93", "#a58bab", "#c4a665", "#7795b1"],
+    flowers: ["#dc7147", "#d85c7b", "#755fc1", "#e2a536", "#4d8ed1", "#ca61a4"],
+  },
+  {
+    key: "jewel",
+    name: "Hoa Ngọc Nhiều Tầng",
+    tiles: ["#88ad68", "#bd926e", "#729b94", "#a387ad", "#c5a161", "#708fac"],
+    flowers: ["#e27b43", "#d95980", "#7563c7", "#e3ac35", "#4d91d2", "#c95eaa"],
+  },
+  {
+    key: "moon",
+    name: "Vườn Trăng",
+    tiles: ["#22264c", "#34234f", "#183d49", "#30345b", "#432855", "#17414f"],
+    flowers: ["#ae72ff", "#d15cff", "#8b7aff", "#c38bff", "#a64cff", "#718dff"],
+  },
 ];
 const SUCCESS = [
   "Hoàn hảo!", "Xuất sắc!", "Làm được rồi!", "Không thể cản!",
@@ -287,6 +321,70 @@ function cellFromPointer(
   return { row, col };
 }
 
+function themeForLevel(levelId: number) {
+  const index = (Math.max(1, Math.abs(levelId)) - 1) % FLOWER_THEMES.length;
+  return FLOWER_THEMES[index];
+}
+
+function Blossom({
+  theme,
+  slot,
+  seed,
+}: {
+  theme: FlowerThemeKey;
+  slot: number;
+  seed: number;
+}) {
+  const positions = [
+    { left: 27, top: 31, size: 35 },
+    { left: 70, top: 38, size: 30 },
+    { left: 50, top: 72, size: 33 },
+  ];
+  const position = positions[slot % positions.length];
+  const outerCount =
+    theme === "silk" ? 5 : theme === "cosmos" ? 8 : theme === "jewel" ? 10 : 7;
+  const outerRadius = theme === "cosmos" ? 6.1 : theme === "jewel" ? 6.3 : 5;
+  const outerRy = theme === "cosmos" ? 6.4 : theme === "jewel" ? 4.7 : 5.8;
+  const outerRx = theme === "cosmos" ? 2.4 : theme === "jewel" ? 2.3 : 3.5;
+  const style = {
+    left: `${position.left + ((seed % 3) - 1) * 2}%`,
+    top: `${position.top + ((seed % 5) - 2)}%`,
+    width: `${position.size + (seed % 3) * 2}%`,
+    "--flower-delay": `${slot * 45}ms`,
+    "--flower-spin": `${(seed % 31) - 15}deg`,
+  } as CSSProperties;
+
+  const ring = (
+    count: number,
+    radius: number,
+    ry: number,
+    rx: number,
+    className: string,
+  ) =>
+    Array.from({ length: count }, (_, index) => (
+      <ellipse
+        className={className}
+        cx="16"
+        cy={16 - radius}
+        rx={rx}
+        ry={ry}
+        key={`${className}-${index}`}
+        transform={`rotate(${(index * 360) / count} 16 16)`}
+      />
+    ));
+
+  return (
+    <span className="flower-head" style={style} aria-hidden="true">
+      <svg viewBox="0 0 32 32">
+        {theme === "silk" && ring(5, 4.4, 6.3, 4.4, "petal petal-soft")}
+        {ring(outerCount, outerRadius, outerRy, outerRx, "petal")}
+        {theme === "jewel" && ring(8, 4, 3.6, 1.9, "petal petal-inner")}
+        <circle className="flower-center" cx="16" cy="16" r={theme === "jewel" ? 2.2 : 2.8} />
+      </svg>
+    </span>
+  );
+}
+
 export function MeowBlockGame() {
   const [screen, setScreen] = useState<"home" | "game">("home");
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -311,6 +409,7 @@ export function MeowBlockGame() {
       tutorialIndex === null ? makeLevel(currentLevel) : TUTORIALS[tutorialIndex],
     [currentLevel, tutorialIndex],
   );
+  const flowerTheme = useMemo(() => themeForLevel(level.id), [level.id]);
 
   useEffect(() => {
     const saved = Math.min(
@@ -382,9 +481,15 @@ export function MeowBlockGame() {
       }
     }
     setOwners(nextOwners);
+    const themeIndex = blockId % flowerTheme.tiles.length;
     setBlocks((old) => [
       ...old,
-      { rect, color: PALETTE[blockId % PALETTE.length], answerIndex },
+      {
+        rect,
+        color: flowerTheme.tiles[themeIndex],
+        flowerColor: flowerTheme.flowers[themeIndex],
+        answerIndex,
+      },
     ]);
     finishIfReady(nextOwners);
   }
@@ -601,7 +706,7 @@ export function MeowBlockGame() {
             </div>
           </div>
         ) : (
-          <div className="play-screen">
+          <div className={`play-screen theme-${flowerTheme.key}`}>
             <header className="topbar">
               <button
                 className="icon-btn"
@@ -617,6 +722,7 @@ export function MeowBlockGame() {
                     : `Hướng dẫn ${tutorialIndex + 1}/4`}
                 </strong>
                 {level.hard && <span className="hard-badge">Khó</span>}
+                <span className="theme-badge">{flowerTheme.name}</span>
               </div>
               <button
                 className="icon-btn"
@@ -677,6 +783,7 @@ export function MeowBlockGame() {
                       "cell",
                       selected ? "preview" : "",
                       level.blocked.has(index) ? "blocked" : "",
+                      owner >= 0 ? "filled" : "",
                       clue ? "clue" : "",
                       clue?.kind === "shape" ? "shape" : "",
                       clue?.kind === "sealed" ? "sealed" : "",
@@ -695,13 +802,26 @@ export function MeowBlockGame() {
                         className={classNames}
                         key={index}
                         data-shape={clue?.shape ?? ""}
-                        style={
-                          owner >= 0
-                            ? { background: blocks[owner]?.color }
-                            : undefined
-                        }
+                        style={owner >= 0
+                          ? {
+                              "--tile": blocks[owner]?.color,
+                              "--flower": blocks[owner]?.flowerColor,
+                            } as CSSProperties
+                          : undefined}
                       >
-                        {label}
+                        {owner >= 0 && (
+                          <span className="cell-flowers" aria-hidden="true">
+                            {[0, 1, 2].map((slot) => (
+                              <Blossom
+                                key={slot}
+                                theme={flowerTheme.key}
+                                slot={slot}
+                                seed={index * 11 + owner * 7 + slot * 3}
+                              />
+                            ))}
+                          </span>
+                        )}
+                        {clue && <span className="clue-value">{label}</span>}
                       </div>
                     );
                   },

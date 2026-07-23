@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8f4ec" />
+  <title>MeowBlock — 4 hướng theme hoa</title>
+  <style>
+    :root {
+      --ink: #26232d;
+      --muted: #746e79;
+      --paper: #f8f4ec;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, #fff 0 4px, transparent 5px),
+        linear-gradient(145deg, #fbf8f1, #eee8dc);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 30px)); margin: 0 auto; padding: 48px 0 70px; }
+    header { max-width: 730px; margin-bottom: 32px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #9a7756;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(38px, 6vw, 66px); letter-spacing: -3px; line-height: .98; }
+    header p { margin: 16px 0 0; color: var(--muted); line-height: 1.65; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .pill {
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: #fff;
+      color: #695f6c;
+      box-shadow: 0 5px 18px rgb(66 48 24 / 8%);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .card {
+      --bloom: #ee695d;
+      --bloom-soft: #ffd1c9;
+      --panel: #fffdf8;
+      --grid-line: #dcd5c9;
+      position: relative;
+      overflow: hidden;
+      min-height: 590px;
+      padding: 24px;
+      border: 1px solid rgb(80 61 46 / 7%);
+      border-radius: 32px;
+      background: var(--panel);
+      box-shadow: 0 20px 55px rgb(72 52 28 / 11%);
+    }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--bloom);
+      color: #fff;
+      font-weight: 900;
+    }
+    .card h2 { margin: 16px 0 4px; font-size: 27px; letter-spacing: -1px; }
+    .card-copy { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .mood {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--bloom-soft) 55%, white);
+      color: color-mix(in srgb, var(--bloom) 72%, #302638);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .stage {
+      position: relative;
+      min-height: 360px;
+      margin-top: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 25px;
+      overflow: hidden;
+    }
+    .board {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 315px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 3px solid var(--ink);
+      border-radius: 13px;
+      overflow: hidden;
+      background: rgb(255 255 255 / 82%);
+      box-shadow: 0 18px 35px rgb(48 35 25 / 14%);
+      touch-action: none;
+      user-select: none;
+    }
+    .cell {
+      position: relative;
+      min-width: 0;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid var(--grid-line);
+      border-bottom: 1px solid var(--grid-line);
+      background: rgb(255 255 255 / 70%);
+      color: #4b4350;
+      font-size: 18px;
+      font-weight: 900;
+      transition: background 160ms ease;
+    }
+    .cell.selecting { background: color-mix(in srgb, var(--bloom-soft) 76%, white); }
+    .cell.filled {
+      background: var(--bloom);
+      color: color-mix(in srgb, var(--bloom) 20%, #1e1720);
+    }
+    .cell.filled::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 9px;
+      border: 1px solid rgb(255 255 255 / 38%);
+    }
+    .flower {
+      --size: 39px;
+      position: absolute;
+      z-index: 5;
+      width: var(--size);
+      height: var(--size);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0) rotate(-24deg);
+      filter: drop-shadow(0 7px 6px rgb(42 28 32 / 18%));
+      animation: grow .72s cubic-bezier(.15,.9,.2,1.28) forwards;
+    }
+    .flower::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #ffdf58;
+      box-shadow: inset 0 -2px 0 rgb(133 80 5 / 16%);
+      transform: translate(-50%, -50%);
+    }
+    .petal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 13px;
+      height: 24px;
+      margin: -23px 0 0 -6.5px;
+      border-radius: 70% 70% 45% 45%;
+      background: color-mix(in srgb, var(--bloom) 82%, white);
+      transform-origin: 50% 23px;
+      box-shadow: inset 0 -4px 5px rgb(120 28 28 / 10%);
+    }
+    .petal:nth-child(1) { transform: rotate(0deg); }
+    .petal:nth-child(2) { transform: rotate(72deg); }
+    .petal:nth-child(3) { transform: rotate(144deg); }
+    .petal:nth-child(4) { transform: rotate(216deg); }
+    .petal:nth-child(5) { transform: rotate(288deg); }
+    .actions { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+    .demo-btn {
+      flex: 1;
+      min-height: 50px;
+      border: 0;
+      border-radius: 17px;
+      background: var(--bloom);
+      color: #fff;
+      box-shadow: 0 6px 0 color-mix(in srgb, var(--bloom) 72%, #4a2940);
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .reset-btn {
+      width: 50px;
+      height: 50px;
+      border: 0;
+      border-radius: 17px;
+      background: #fff;
+      color: #625963;
+      box-shadow: 0 5px 16px rgb(65 44 24 / 10%);
+      cursor: pointer;
+      font-size: 20px;
+    }
+    .hint { margin: 12px 0 0; color: #8b8189; text-align: center; font-size: 11px; }
+
+    .meadow { --bloom: #ef665d; --bloom-soft: #ffd6ce; --panel: #fffdf7; }
+    .meadow .stage {
+      background:
+        radial-gradient(ellipse at 14% 100%, #9bcf74 0 16%, transparent 17%),
+        radial-gradient(ellipse at 86% 104%, #80bd63 0 18%, transparent 19%),
+        linear-gradient(#dff3ff 0 52%, #d8eab8 53% 100%);
+    }
+    .meadow .stage::after {
+      content: "☁  ·  ☁";
+      position: absolute;
+      top: 22px;
+      left: 0;
+      right: 0;
+      color: rgb(255 255 255 / 85%);
+      text-align: center;
+      font-size: 40px;
+      letter-spacing: 45px;
+    }
+
+    .lotus { --bloom: #e76a9e; --bloom-soft: #fbd2e2; --panel: #fffafc; --grid-line: #b9d7d8; }
+    .lotus .stage {
+      background:
+        radial-gradient(ellipse at 20% 82%, #7fbf9b 0 9%, transparent 10%),
+        radial-gradient(ellipse at 85% 18%, #95cfaa 0 8%, transparent 9%),
+        repeating-radial-gradient(circle at 50% 50%, transparent 0 22px, rgb(255 255 255 / 22%) 23px 25px),
+        linear-gradient(145deg, #acd8dc, #6facbd);
+    }
+    .lotus .flower { --size: 44px; }
+    .lotus .petal { width: 15px; height: 27px; border-radius: 100% 12% 100% 12%; }
+
+    .moon { --bloom: #a78bfa; --bloom-soft: #30255d; --panel: #171427; --grid-line: #4b456a; color: #f8f3ff; }
+    .moon .card-copy, .moon .hint { color: #aaa2c0; }
+    .moon .stage {
+      background:
+        radial-gradient(circle at 76% 18%, #fff6cf 0 21px, transparent 23px),
+        radial-gradient(circle at 18% 23%, #fff 0 1px, transparent 2px),
+        radial-gradient(circle at 83% 72%, #fff 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 46% 8%, #fff 0 1px, transparent 2px),
+        linear-gradient(#242047, #18172f);
+    }
+    .moon .board { border-color: #d9d2f2; background: rgb(23 20 39 / 70%); }
+    .moon .cell { background: rgb(27 23 48 / 72%); color: #eee9ff; }
+    .moon .cell.selecting { background: #3b3269; }
+    .moon .cell.filled { background: var(--bloom); color: #251a47; }
+    .moon .flower { filter: drop-shadow(0 0 10px var(--bloom)); }
+    .moon .flower::after { background: #f8f2c9; box-shadow: 0 0 8px #fff6b8; }
+    .moon .reset-btn { background: #29243e; color: #e7defa; }
+
+    .sakura { --bloom: #f28aa8; --bloom-soft: #ffd7e2; --panel: #fffaf8; }
+    .sakura .stage {
+      background:
+        linear-gradient(28deg, transparent 46%, #80553f 47% 49%, transparent 50%),
+        radial-gradient(circle at 18% 20%, #ffd1dc 0 25px, transparent 26px),
+        radial-gradient(circle at 84% 82%, #ffd5df 0 34px, transparent 35px),
+        linear-gradient(145deg, #fff4ee, #f7dedb);
+    }
+    .sakura .flower { --size: 35px; }
+    .sakura .petal { width: 16px; height: 20px; border-radius: 70% 70% 70% 20%; }
+    .sakura .flower::after { width: 8px; height: 8px; background: #bf3e68; }
+
+    @keyframes grow {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(-24deg); }
+      64% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(8deg); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+    }
+    @media (max-width: 820px) {
+      .gallery { grid-template-columns: 1fr; }
+      .card { min-height: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">MeowBlock · Theme exploration</p>
+      <h1>4 khu vườn,<br />một khoảnh khắc nở hoa.</h1>
+      <p>
+        Kéo qua lưới để tạo một hình chữ nhật. Vùng chỉ đổi màu sau khi thả tay;
+        khi đó hoa cùng màu với khối mới mọc lên. Bốn hướng dưới đây chỉ là demo
+        để duyệt — game chính chưa bị thay đổi.
+      </p>
+      <div class="legend">
+        <span class="pill">① Kéo từ một ô sang ô khác</span>
+        <span class="pill">② Thả tay để xác nhận hình chữ nhật</span>
+        <span class="pill">③ Hoa mọc theo từng ô</span>
+      </div>
+    </header>
+
+    <section class="gallery">
+      <article class="card meadow" data-theme="meadow">
+        <div class="card-top">
+          <div><span class="number">01</span><h2>Vườn Ban Mai</h2><p class="card-copy">Tươi sáng, thân thiện, hoa cúc rung nhẹ trên nền đồng cỏ.</p></div>
+          <span class="mood">Cheerful</span>
+        </div>
+        <div class="stage"><div class="board" aria-label="Demo Vườn Ban Mai"></div></div>
+        <div class="actions"><button class="demo-btn">Xem hoa mọc</button><button class="reset-btn" aria-label="Làm lại">↻</button></div>
+        <p class="hint">Màu demo: coral · Hoa mọc lần lượt từ trái sang phải</p>
+      </article>
+
+      <article class="card lotus" data-theme="lotus">
+        <div class="card-top">
+          <div><span class="number">02</span><h2>Hồ Sen Tĩnh Lặng</h2><p class="card-copy">Mềm mại và thư giãn, cánh sen nở trên mặt nước gợn nhẹ.</p></div>
+          <span class="mood">Calm</span>
+        </div>
+        <div class="stage"><div class="board" aria-label="Demo Hồ Sen Tĩnh Lặng"></div></div>
+        <div class="actions"><button class="demo-btn">Xem hoa mọc</button><button class="reset-btn" aria-label="Làm lại">↻</button></div>
+        <p class="hint">Màu demo: hồng sen · Cánh dài, nhịp nở chậm hơn</p>
+      </article>
+
+      <article class="card moon" data-theme="moon">
+        <div class="card-top">
+          <div><span class="number">03</span><h2>Vườn Trăng</h2><p class="card-copy">Huyền ảo, tương phản cao, hoa tím phát sáng dưới trăng.</p></div>
+          <span class="mood">Magical</span>
+        </div>
+        <div class="stage"><div class="board" aria-label="Demo Vườn Trăng"></div></div>
+        <div class="actions"><button class="demo-btn">Xem hoa mọc</button><button class="reset-btn" aria-label="Làm lại">↻</button></div>
+        <p class="hint">Màu demo: tím lavender · Hoa có quầng sáng dịu</p>
+      </article>
+
+      <article class="card sakura" data-theme="sakura">
+        <div class="card-top">
+          <div><span class="number">04</span><h2>Đường Hoa Anh Đào</h2><p class="card-copy">Tinh tế, thơ mộng, từng cánh sakura bật nở như một phần thưởng.</p></div>
+          <span class="mood">Poetic</span>
+        </div>
+        <div class="stage"><div class="board" aria-label="Demo Đường Hoa Anh Đào"></div></div>
+        <div class="actions"><button class="demo-btn">Xem hoa mọc</button><button class="reset-btn" aria-label="Làm lại">↻</button></div>
+        <p class="hint">Màu demo: hồng sakura · Bông nhỏ, nhịp nở nhanh</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const FLOWER = '<span class="petal"></span>'.repeat(5);
+
+    document.querySelectorAll('.card').forEach((card, cardIndex) => {
+      const board = card.querySelector('.board');
+      let start = null;
+      let end = null;
+      let dragging = false;
+
+      for (let i = 0; i < 16; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        if (i === 5) cell.textContent = cardIndex % 2 ? '4' : '6';
+        board.appendChild(cell);
+      }
+
+      function rectIndexes(a, b) {
+        const ar = Math.floor(a / 4), ac = a % 4;
+        const br = Math.floor(b / 4), bc = b % 4;
+        const top = Math.min(ar, br), bottom = Math.max(ar, br);
+        const left = Math.min(ac, bc), right = Math.max(ac, bc);
+        const out = [];
+        for (let r = top; r <= bottom; r++) {
+          for (let c = left; c <= right; c++) out.push(r * 4 + c);
+        }
+        return out;
+      }
+
+      function preview() {
+        board.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selecting'));
+        if (start === null || end === null) return;
+        rectIndexes(start, end).forEach(i => board.children[i].classList.add('selecting'));
+      }
+
+      function bloom(a, b) {
+        reset();
+        const cells = rectIndexes(a, b);
+        cells.forEach((index, order) => {
+          const cell = board.children[index];
+          cell.classList.add('filled');
+          setTimeout(() => {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.innerHTML = FLOWER;
+            flower.style.left = `${((index % 4) + .5) * 25}%`;
+            flower.style.top = `${(Math.floor(index / 4) + .5) * 25}%`;
+            board.appendChild(flower);
+          }, 180 + order * 115);
+        });
+      }
+
+      function reset() {
+        board.querySelectorAll('.flower').forEach(flower => flower.remove());
+        board.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selecting', 'filled'));
+        start = null; end = null; dragging = false;
+      }
+
+      board.addEventListener('pointerdown', event => {
+        const cell = event.target.closest('.cell');
+        if (!cell) return;
+        dragging = true;
+        start = Number(cell.dataset.index);
+        end = start;
+        board.setPointerCapture(event.pointerId);
+        preview();
+      });
+      board.addEventListener('pointermove', event => {
+        if (!dragging) return;
+        const rect = board.getBoundingClientRect();
+        const col = Math.max(0, Math.min(3, Math.floor((event.clientX - rect.left) / rect.width * 4)));
+        const row = Math.max(0, Math.min(3, Math.floor((event.clientY - rect.top) / rect.height * 4)));
+        end = row * 4 + col;
+        preview();
+      });
+      board.addEventListener('pointerup', () => {
+        if (!dragging || start === null || end === null) return;
+        const a = start, b = end;
+        dragging = false;
+        bloom(a, b);
+      });
+      card.querySelector('.demo-btn').addEventListener('click', () => {
+        const presets = [[4, 9], [5, 10], [1, 6], [8, 14]];
+        bloom(...presets[cardIndex]);
+      });
+      card.querySelector('.reset-btn').addEventListener('click', reset);
+    });
+  </script>
+</body>
+</html>

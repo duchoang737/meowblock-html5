@@ -198,6 +198,7 @@ button { font: inherit; }
   max-height: min(66svh, 570px);
   aspect-ratio: var(--cols) / var(--rows);
   display: grid;
+  position: relative;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
   border: 3px solid #5e5868;
@@ -225,21 +226,37 @@ button { font: inherit; }
   color: #342e41;
   transition: background 110ms ease, transform 110ms ease;
 }
-.cell.filled {
+.block-plots {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.block-plot {
+  position: absolute;
+  overflow: hidden;
+  border: 2px solid rgb(255 255 255 / 48%);
+  border-radius: clamp(9px, 2.4vw, 17px);
   background:
-    radial-gradient(circle at 24% 22%, rgb(255 255 255 / 18%) 0 2px, transparent 2.6px),
-    var(--tile);
+    radial-gradient(circle at 17% 20%, rgb(255 255 255 / 21%) 0 2px, transparent 2.7px),
+    radial-gradient(circle at 74% 76%, rgb(49 42 36 / 11%) 0 2px, transparent 2.8px),
+    linear-gradient(145deg, color-mix(in srgb, var(--tile) 84%, white), var(--tile));
   box-shadow:
-    inset 0 -7px 11px color-mix(in srgb, var(--tile) 75%, #514640),
-    0 2px 4px rgb(49 41 34 / 12%);
-  outline: 2px solid rgb(255 255 255 / 34%);
-  outline-offset: -2px;
+    inset 0 -9px 15px color-mix(in srgb, var(--tile) 73%, #514640),
+    0 3px 7px rgb(49 41 34 / 18%);
+}
+.cell.filled {
+  z-index: 4;
+  background: transparent;
+  box-shadow: none;
+  outline: 0;
 }
 .cell.preview { background: #ffe6ad !important; }
 .cell.blocked {
   background: repeating-linear-gradient(135deg, #c8c3c7 0 5px, #aea8ad 5px 10px) !important;
 }
 .cell.clue { z-index: 2; }
+.cell.filled.clue { z-index: 5; }
 .clue-value {
   position: relative;
   z-index: 30;
@@ -318,14 +335,19 @@ button { font: inherit; }
     inset 0 -5px 9px rgb(0 0 0 / 17%);
 }
 .theme-moon .cell.filled {
+  background: transparent;
+  box-shadow: none;
+  outline: 0;
+}
+.theme-moon .block-plot {
+  border-color: color-mix(in srgb, var(--flower) 48%, white);
   background:
-    radial-gradient(circle at 23% 20%, rgb(255 255 255 / 22%) 0 2px, transparent 2.8px),
-    linear-gradient(145deg, color-mix(in srgb, var(--tile) 78%, white), var(--tile));
+    radial-gradient(circle at 18% 20%, rgb(255 255 255 / 19%) 0 2px, transparent 2.8px),
+    linear-gradient(145deg, color-mix(in srgb, var(--tile) 77%, white), var(--tile));
   box-shadow:
     inset 0 0 0 2px color-mix(in srgb, var(--tile) 48%, white),
     inset 0 -8px 13px rgb(0 0 0 / 25%),
     0 0 10px color-mix(in srgb, var(--flower) 38%, transparent);
-  outline-color: rgb(255 255 255 / 55%);
 }
 .theme-moon .flower-head {
   filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 5px currentColor);

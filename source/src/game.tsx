@@ -788,6 +788,26 @@ export function MeowBlockGame() {
                   setDragEnd(null);
                 }}
               >
+                <span className="block-plots" aria-hidden="true">
+                  {blocks.map((block, blockIndex) => {
+                    const width = block.rect.right - block.rect.left + 1;
+                    const height = block.rect.bottom - block.rect.top + 1;
+                    return (
+                      <span
+                        className="block-plot"
+                        key={`${blockIndex}-${block.answerIndex ?? "free"}`}
+                        style={{
+                          "--tile": block.color,
+                          "--flower": block.flowerColor,
+                          left: `calc(${(block.rect.left / level.cols) * 100}% + 3px)`,
+                          top: `calc(${(block.rect.top / level.rows) * 100}% + 3px)`,
+                          width: `calc(${(width / level.cols) * 100}% - 6px)`,
+                          height: `calc(${(height / level.rows) * 100}% - 6px)`,
+                        } as CSSProperties}
+                      />
+                    );
+                  })}
+                </span>
                 {Array.from(
                   { length: level.rows * level.cols },
                   (_, index) => {

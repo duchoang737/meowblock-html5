@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f3ede5" />
+  <title>MeowBlock — 4 demo tập trung vào hoa</title>
+  <style>
+    :root { --ink: #302a33; --muted: #756e76; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 6%, rgb(255 255 255 / 75%) 0 4px, transparent 5px),
+        linear-gradient(145deg, #faf6ef, #e8dfd3);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 28px)); margin: auto; padding: 42px 0 70px; }
+    header { max-width: 820px; margin-bottom: 28px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #a96b53;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2.3px;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(38px, 6vw, 66px); line-height: .98; letter-spacing: -3px; }
+    header > p:last-of-type { max-width: 720px; color: var(--muted); line-height: 1.65; }
+    .rules { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
+    .rule {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 5px 15px rgb(73 48 27 / 8%);
+      color: #665e67;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .card {
+      --accent: #d96767;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid rgb(75 52 35 / 8%);
+      border-radius: 31px;
+      background: #fffdf9;
+      box-shadow: 0 20px 58px rgb(67 48 28 / 11%);
+    }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+    .index {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 1000;
+    }
+    h2 { margin: 12px 0 4px; font-size: 27px; letter-spacing: -1px; }
+    .copy { max-width: 340px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      color: color-mix(in srgb, var(--accent) 76%, #322832);
+      font-size: 10px;
+      font-weight: 1000;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .stage {
+      min-height: 405px;
+      margin-top: 19px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 25px;
+      background:
+        radial-gradient(ellipse at 10% 98%, #8ab668 0 16%, transparent 16.5%),
+        linear-gradient(#e3f3fa 0 48%, #d7e8c5 49%);
+    }
+    .board {
+      position: relative;
+      width: min(88%, 335px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      overflow: hidden;
+      border: 3px solid #4c464d;
+      border-radius: 16px;
+      background: rgb(255 255 255 / 78%);
+      box-shadow: 0 17px 36px rgb(48 36 27 / 17%);
+    }
+    .cell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgb(88 77 80 / 17%);
+      border-bottom: 1px solid rgb(88 77 80 / 17%);
+      background: rgb(255 255 255 / 52%);
+      color: #403a42;
+      font-size: 17px;
+      font-weight: 1000;
+    }
+    .cell.filled { border-color: transparent; color: transparent; background: transparent; }
+    .plot {
+      position: absolute;
+      z-index: 3;
+      overflow: hidden;
+      border: 2px solid rgb(255 255 255 / 50%);
+      border-radius: 19px;
+      background:
+        radial-gradient(circle at 18% 22%, rgb(255 255 255 / 19%) 0 1.5px, transparent 2.2px),
+        radial-gradient(circle at 74% 76%, rgb(38 40 27 / 10%) 0 2px, transparent 2.6px),
+        var(--soil);
+      box-shadow:
+        inset 0 -10px 16px color-mix(in srgb, var(--soil) 72%, #48413b),
+        0 4px 9px rgb(48 42 32 / 17%);
+      pointer-events: none;
+    }
+    .clue {
+      position: absolute;
+      z-index: 30;
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgb(255 255 255 / 88%);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--soil) 58%, white);
+      color: #312c34;
+      box-shadow: 0 3px 8px rgb(33 27 31 / 28%);
+      font-size: 13px;
+      font-weight: 1000;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .plant {
+      --flower: #ef6b80;
+      --size: 30px;
+      --spin: 0deg;
+      position: absolute;
+      z-index: 10;
+      width: var(--size);
+      height: calc(var(--size) * 1.28);
+      color: var(--flower);
+      pointer-events: none;
+      filter: drop-shadow(0 2px 1px rgb(35 32 25 / 18%));
+      transform: translate(-50%, -54%) scale(0) rotate(var(--spin));
+      transform-origin: 50% 100%;
+      animation: bloom .66s cubic-bezier(.15,.82,.2,1.22) forwards;
+    }
+    .plant svg { width: 100%; height: 100%; overflow: visible; }
+    .plant .stem {
+      fill: none;
+      stroke: #486f43;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+    }
+    .plant .leaf { fill: #639052; stroke: #42693d; stroke-width: .7; }
+    .plant .petal { fill: currentColor; stroke: color-mix(in srgb, currentColor 78%, #4a313a); stroke-width: .45; }
+    .plant .petal-soft { fill: currentColor; opacity: .72; }
+    .plant .center {
+      fill: color-mix(in srgb, currentColor 58%, #4a3436);
+      stroke: color-mix(in srgb, currentColor 76%, white);
+      stroke-width: .7;
+    }
+    .plant .vein {
+      fill: none;
+      stroke: color-mix(in srgb, currentColor 63%, #fff);
+      stroke-width: .6;
+      stroke-linecap: round;
+      opacity: .75;
+    }
+    .velvet { --accent: #d45f72; }
+    .bells { --accent: #7762c7; }
+    .dahlia { --accent: #dc7c48; }
+    .neon {
+      --accent: #20cfef;
+      background: #171629;
+      color: #f5f1ff;
+      border-color: rgb(132 104 255 / 20%);
+    }
+    .neon .copy { color: #aaa6bd; }
+    .neon .tag { background: rgb(33 215 240 / 12%); color: #6eeeff; }
+    .neon .stage {
+      background:
+        radial-gradient(circle at 18% 15%, rgb(94 65 178 / 22%) 0 2px, transparent 3px),
+        radial-gradient(circle at 84% 78%, rgb(31 213 236 / 16%) 0 2px, transparent 3px),
+        linear-gradient(145deg, #131225, #242144);
+    }
+    .neon .board {
+      border-color: #7770a2;
+      background: #0f1123;
+      box-shadow: 0 0 30px rgb(43 203 236 / 18%);
+    }
+    .neon .cell { border-color: rgb(150 145 198 / 14%); background: rgb(22 22 48 / 64%); color: #e9e4ff; }
+    .neon .plot {
+      border-color: color-mix(in srgb, var(--flower) 40%, transparent);
+      background:
+        radial-gradient(circle at 20% 24%, rgb(255 255 255 / 12%) 0 1.4px, transparent 2px),
+        var(--soil);
+      box-shadow: inset 0 -10px 18px rgb(0 0 0 / 28%), 0 0 10px color-mix(in srgb, var(--flower) 42%, transparent);
+    }
+    .neon .plant {
+      filter:
+        drop-shadow(0 0 2px currentColor)
+        drop-shadow(0 0 5px currentColor)
+        drop-shadow(0 0 9px color-mix(in srgb, currentColor 70%, transparent));
+    }
+    .neon .plant .stem { stroke: #5dffb2; }
+    .neon .plant .leaf { fill: none; stroke: #5dffb2; stroke-width: 1.2; }
+    .neon .plant .petal { fill: rgb(255 255 255 / 9%); stroke: currentColor; stroke-width: 1.25; }
+    .neon .plant .center { fill: currentColor; stroke: #fff; stroke-width: .55; }
+    .neon .plant .vein { stroke: currentColor; opacity: .9; }
+    .neon .clue { color: white; border-color: color-mix(in srgb, var(--flower) 65%, white); background: #191a35; box-shadow: 0 0 8px var(--flower); }
+    .actions { display: grid; grid-template-columns: 1fr 50px; gap: 10px; margin-top: 16px; }
+    .grow, .reset {
+      min-height: 50px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 1000;
+    }
+    .grow { background: var(--accent); color: white; box-shadow: 0 6px 0 color-mix(in srgb, var(--accent) 70%, #44303b); }
+    .reset { background: #f3ece4; color: #675f67; font-size: 19px; }
+    .neon .reset { background: #292741; color: #ddd8fb; }
+    .note { margin: 12px 0 0; color: #8b838a; text-align: center; font-size: 11px; }
+    .neon .note { color: #8f89a8; }
+    @keyframes bloom {
+      0% { opacity: 0; transform: translate(-50%, -34%) scale(.05) rotate(calc(var(--spin) - 13deg)); }
+      64% { opacity: 1; transform: translate(-50%, -57%) scale(1.12) rotate(calc(var(--spin) + 3deg)); }
+      100% { opacity: 1; transform: translate(-50%, -54%) scale(1) rotate(var(--spin)); }
+    }
+    @media (max-width: 820px) { .gallery { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">MeowBlock · Flower study 09–12</p>
+      <h1>Bốn kiểu hoa mới.</h1>
+      <p>
+        Vòng này tập trung vào dáng cánh, độ sâu và chuyển động nở. Hoa được vẽ dạng vector
+        để luôn sắc nét; mỗi block vẫn chỉ dùng một màu hoa và có một màu đất riêng.
+      </p>
+      <div class="rules">
+        <span class="rule">Hoa vector lớn 24–38px</span>
+        <span class="rule">Mỗi block một màu hoa</span>
+        <span class="rule">Mỗi block một màu đất</span>
+        <span class="rule">Số điều kiện luôn ở trên cùng</span>
+      </div>
+    </header>
+
+    <section class="gallery">
+      <article class="card velvet" data-theme="velvet">
+        <div class="card-head"><div><span class="index">09</span><h2>Hoa Nhung Năm Cánh</h2><p class="copy">Cánh tròn mềm, có lớp cánh sau và đường gân nhẹ để hoa có chiều sâu.</p></div><span class="tag">Soft</span></div>
+        <div class="stage"><div class="board" aria-label="Demo hoa nhung năm cánh"></div></div>
+        <div class="actions"><button class="grow">Cho hoa nở</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Dáng hoa mềm, dễ thương · Phù hợp nền game sáng</p>
+      </article>
+
+      <article class="card bells" data-theme="bells">
+        <div class="card-head"><div><span class="index">10</span><h2>Cụm Hoa Chuông</h2><p class="copy">Mỗi cây có ba nụ chuông rủ xuống, tạo cảm giác vườn hoa sinh động hơn.</p></div><span class="tag">Graceful</span></div>
+        <div class="stage"><div class="board" aria-label="Demo cụm hoa chuông"></div></div>
+        <div class="actions"><button class="grow">Cho hoa nở</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Dáng cao, thanh · Ít bông nhưng có nhịp điệu rõ</p>
+      </article>
+
+      <article class="card dahlia" data-theme="dahlia">
+        <div class="card-head"><div><span class="index">11</span><h2>Thược Dược Nhiều Lớp</h2><p class="copy">Hai vòng cánh xếp chồng, tâm hoa rõ và tròn như huy hiệu nhỏ.</p></div><span class="tag">Layered</span></div>
+        <div class="stage"><div class="board" aria-label="Demo hoa thược dược nhiều lớp"></div></div>
+        <div class="actions"><button class="grow">Cho hoa nở</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Hoa đầy đặn, nổi bật · Đẹp khi nhìn gần lẫn trên điện thoại</p>
+      </article>
+
+      <article class="card neon" data-theme="neon">
+        <div class="card-head"><div><span class="index">12</span><h2>Vườn Hoa Neon</h2><p class="copy">Cánh hoa nét sáng trên nền đêm, thân lá phát quang và từng block có quầng màu riêng.</p></div><span class="tag">Neon</span></div>
+        <div class="stage"><div class="board" aria-label="Demo vườn hoa neon"></div></div>
+        <div class="actions"><button class="grow">Bật vườn neon</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Phát sáng vừa đủ · Số điều kiện vẫn rõ giữa hiệu ứng glow</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const layouts = [
+      { clue: 4, clueCell: 0, left: 0, top: 0, width: 2, height: 2 },
+      { clue: 6, clueCell: 3, left: 2, top: 0, width: 3, height: 2 },
+      { clue: 15, clueCell: 17, left: 0, top: 2, width: 5, height: 3 }
+    ];
+    const palettes = {
+      velvet: [
+        { soil: '#88b760', flower: '#f1b43b' },
+        { soil: '#c49b68', flower: '#dc6788' },
+        { soil: '#72a79a', flower: '#876dd0' }
+      ],
+      bells: [
+        { soil: '#8dad68', flower: '#765fc7' },
+        { soil: '#bc9171', flower: '#e16483' },
+        { soil: '#6f9f91', flower: '#e8a83f' }
+      ],
+      dahlia: [
+        { soil: '#91b467', flower: '#dc7045' },
+        { soil: '#ba9570', flower: '#d95778' },
+        { soil: '#769f94', flower: '#7965c8' }
+      ],
+      neon: [
+        { soil: '#222948', flower: '#25e6ff' },
+        { soil: '#30234b', flower: '#ff4edb' },
+        { soil: '#173d3d', flower: '#a7ff38' }
+      ]
+    };
+
+    function petals(count, radius, length, width, className = 'petal') {
+      return Array.from({ length: count }, (_, index) => {
+        const angle = index * 360 / count;
+        return `<ellipse class="${className}" cx="16" cy="${16 - radius}" rx="${width}" ry="${length}" transform="rotate(${angle} 16 16)"/>`;
+      }).join('');
+    }
+
+    function flowerSvg(theme) {
+      if (theme === 'bells') {
+        return `<svg viewBox="0 0 32 43" aria-hidden="true">
+          <path class="stem" d="M16 42 C15 30 17 18 15 9 M16 26 C11 23 9 20 8 17 M16 20 C21 17 23 14 24 11"/>
+          <path class="leaf" d="M15 31 C9 25 6 29 7 33 C10 35 13 33 15 31Z"/>
+          <path class="leaf" d="M16 27 C22 22 25 25 24 29 C21 31 18 29 16 27Z"/>
+          <path class="petal" d="M4 14 C4 9 12 9 12 14 C12 18 10 21 8 22 C6 20 4 18 4 14Z"/>
+          <path class="petal" d="M20 8 C20 3 28 3 28 8 C28 12 26 15 24 16 C22 14 20 12 20 8Z"/>
+          <path class="petal" d="M11 6 C11 1 19 1 19 6 C19 10 17 13 15 14 C13 12 11 10 11 6Z"/>
+          <path class="vein" d="M6 15 Q8 17 10 15 M22 9 Q24 11 26 9 M13 7 Q15 9 17 7"/>
+        </svg>`;
+      }
+      if (theme === 'dahlia') {
+        return `<svg viewBox="0 0 32 43" aria-hidden="true">
+          <path class="stem" d="M16 42 C15 33 17 24 16 15"/>
+          <path class="leaf" d="M16 30 C9 24 6 29 8 34 C11 35 14 33 16 30Z"/>
+          <path class="leaf" d="M16 27 C23 22 26 27 24 31 C21 32 18 30 16 27Z"/>
+          <g transform="translate(0 0)">${petals(10, 6.2, 5.1, 2.6, 'petal-soft')}${petals(8, 3.8, 3.8, 2.1)}</g>
+          <circle class="center" cx="16" cy="16" r="3.1"/>
+          <circle class="vein" cx="16" cy="16" r="1.3"/>
+        </svg>`;
+      }
+      if (theme === 'neon') {
+        return `<svg viewBox="0 0 32 43" aria-hidden="true">
+          <path class="stem" d="M16 42 C14 34 18 25 16 17"/>
+          <path class="leaf" d="M15 31 C8 24 6 31 9 35 C12 35 14 33 15 31Z"/>
+          <path class="leaf" d="M17 27 C24 21 26 28 23 31 C20 31 18 29 17 27Z"/>
+          ${petals(6, 5.2, 5.8, 3.1)}
+          <circle class="center" cx="16" cy="16" r="2.8"/>
+          <circle class="vein" cx="16" cy="16" r="6.5"/>
+        </svg>`;
+      }
+      return `<svg viewBox="0 0 32 43" aria-hidden="true">
+        <path class="stem" d="M16 42 C14 33 18 25 16 16"/>
+        <path class="leaf" d="M15 31 C8 24 6 30 8 34 C11 36 14 33 15 31Z"/>
+        <path class="leaf" d="M17 28 C23 22 27 27 24 32 C21 32 18 30 17 28Z"/>
+        ${petals(5, 4.3, 6, 4.3, 'petal-soft')}
+        ${petals(5, 4.7, 5.2, 3.6)}
+        <circle class="center" cx="16" cy="16" r="3"/>
+        <path class="vein" d="M16 13 L16 9 M18.7 15 L22 13 M17.8 18.3 L20 22 M14.2 18.3 L12 22 M13.3 15 L10 13"/>
+      </svg>`;
+    }
+
+    document.querySelectorAll('.card').forEach((card, cardIndex) => {
+      const board = card.querySelector('.board');
+      const theme = card.dataset.theme;
+      let timers = [];
+
+      for (let index = 0; index < 25; index++) {
+        const cell = document.createElement('div');
+        const block = layouts.find(layout => layout.clueCell === index);
+        cell.className = 'cell';
+        if (block) cell.textContent = block.clue;
+        board.appendChild(cell);
+      }
+
+      function cellsOf(block) {
+        const result = [];
+        for (let row = block.top; row < block.top + block.height; row++) {
+          for (let col = block.left; col < block.left + block.width; col++) result.push(row * 5 + col);
+        }
+        return result;
+      }
+
+      function addPlant(block, style, order, blockIndex) {
+        const plant = document.createElement('div');
+        const margin = .14;
+        const x = block.left + margin + Math.random() * (block.width - margin * 2);
+        const y = block.top + .13 + Math.random() * (block.height - .27);
+        plant.className = 'plant';
+        plant.innerHTML = flowerSvg(theme);
+        plant.style.left = `${x * 20}%`;
+        plant.style.top = `${y * 20}%`;
+        plant.style.setProperty('--flower', style.flower);
+        plant.style.setProperty('--size', `${theme === 'neon' ? 27 + Math.random() * 11 : 24 + Math.random() * 10}px`);
+        plant.style.setProperty('--spin', `${-11 + Math.random() * 22}deg`);
+        plant.style.animationDelay = `${order * 42 + blockIndex * 90 + Math.random() * 80}ms`;
+        board.appendChild(plant);
+      }
+
+      function addBlock(block, blockIndex) {
+        const style = palettes[theme][blockIndex];
+        cellsOf(block).forEach(index => board.children[index].classList.add('filled'));
+
+        const plot = document.createElement('div');
+        plot.className = 'plot';
+        plot.style.setProperty('--soil', style.soil);
+        plot.style.setProperty('--flower', style.flower);
+        plot.style.left = `calc(${block.left * 20}% + 3px)`;
+        plot.style.top = `calc(${block.top * 20}% + 3px)`;
+        plot.style.width = `calc(${block.width * 20}% - 6px)`;
+        plot.style.height = `calc(${block.height * 20}% - 6px)`;
+        board.appendChild(plot);
+
+        const density = theme === 'bells' ? 1.25 : theme === 'dahlia' ? 1.35 : 1.55;
+        const count = Math.max(5, Math.round(block.width * block.height * density));
+        for (let i = 0; i < count; i++) addPlant(block, style, i, blockIndex);
+
+        const clue = document.createElement('div');
+        clue.className = 'clue';
+        clue.textContent = block.clue;
+        clue.style.setProperty('--soil', style.soil);
+        clue.style.setProperty('--flower', style.flower);
+        clue.style.left = `${((block.clueCell % 5) + .5) * 20}%`;
+        clue.style.top = `${(Math.floor(block.clueCell / 5) + .5) * 20}%`;
+        board.appendChild(clue);
+      }
+
+      function reset() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        board.querySelectorAll('.plot,.plant,.clue').forEach(node => node.remove());
+        board.querySelectorAll('.cell').forEach(cell => cell.classList.remove('filled'));
+      }
+
+      function grow() {
+        reset();
+        layouts.forEach((block, index) => {
+          timers.push(setTimeout(() => addBlock(block, index), index * 280));
+        });
+      }
+
+      card.querySelector('.grow').addEventListener('click', grow);
+      card.querySelector('.reset').addEventListener('click', reset);
+      timers.push(setTimeout(grow, 260 + cardIndex * 170));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f1e8" />
+  <title>MeowBlock — 4 theme hoa mới (05–08)</title>
+  <style>
+    :root { --ink: #29252d; --muted: #746e73; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 5%, #fff 0 3px, transparent 4px),
+        linear-gradient(145deg, #fbf8f1, #ebe4d8);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 30px)); margin: auto; padding: 46px 0 72px; }
+    header { max-width: 780px; margin-bottom: 30px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #9a7654;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2.4px;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(38px, 6vw, 66px); line-height: .98; letter-spacing: -3px; }
+    header > p:last-of-type { color: var(--muted); line-height: 1.65; }
+    .rules { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+    .rule {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 5px 16px rgb(72 48 23 / 8%);
+      color: #675f67;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .card {
+      --accent: #e16857;
+      --plot: #87ad5c;
+      --plot-dark: #668b40;
+      --scene: #e0f2d2;
+      min-height: 608px;
+      padding: 23px;
+      overflow: hidden;
+      border: 1px solid rgb(72 50 34 / 8%);
+      border-radius: 32px;
+      background: #fffdf8;
+      box-shadow: 0 20px 58px rgb(67 48 28 / 11%);
+    }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .index {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .card h2 { margin: 14px 0 4px; font-size: 27px; letter-spacing: -1px; }
+    .copy { max-width: 330px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .badge {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 16%, white);
+      color: color-mix(in srgb, var(--accent) 72%, #2e2630);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .stage {
+      min-height: 365px;
+      margin-top: 20px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 25px;
+      background: var(--scene);
+    }
+    .board {
+      position: relative;
+      width: min(100%, 315px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+      border: 3px solid #49434b;
+      border-radius: 13px;
+      background: rgb(255 255 255 / 84%);
+      box-shadow: 0 18px 37px rgb(48 35 25 / 15%);
+      touch-action: none;
+      user-select: none;
+    }
+    .cell {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgb(91 79 75 / 20%);
+      border-bottom: 1px solid rgb(91 79 75 / 20%);
+      color: #443e47;
+      background: rgb(255 255 255 / 65%);
+      font-size: 19px;
+      font-weight: 900;
+      transition: background 130ms ease;
+    }
+    .cell.selecting { background: color-mix(in srgb, var(--accent) 21%, white); }
+    .cell.filled { border-color: transparent; color: transparent; background: var(--plot); }
+    .plot {
+      position: absolute;
+      z-index: 3;
+      overflow: hidden;
+      border: 2px solid rgb(255 255 255 / 26%);
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 16% 22%, rgb(255 255 255 / 14%) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 72% 75%, rgb(38 58 17 / 15%) 0 2px, transparent 2.5px),
+        var(--plot);
+      box-shadow: inset 0 -9px 15px color-mix(in srgb, var(--plot-dark) 28%, transparent), 0 7px 15px rgb(49 60 29 / 18%);
+      pointer-events: none;
+    }
+    .clue {
+      position: absolute;
+      z-index: 12;
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgb(255 255 255 / 75%);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--plot) 70%, white);
+      color: #29242c;
+      box-shadow: 0 3px 7px rgb(32 26 30 / 28%);
+      font-size: 14px;
+      font-weight: 1000;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .plant {
+      --size: 12px;
+      --tone: var(--accent);
+      --spin: 0deg;
+      position: absolute;
+      z-index: 8;
+      width: var(--size);
+      height: var(--size);
+      pointer-events: none;
+      filter: drop-shadow(0 2px 1px rgb(33 35 20 / 18%));
+      transform: translate(-50%, -50%) scale(0) rotate(var(--spin));
+      animation: sprout .52s cubic-bezier(.16,.9,.24,1.3) forwards;
+    }
+    .plant .stem {
+      position: absolute;
+      left: 50%;
+      top: 49%;
+      width: 1.2px;
+      height: 58%;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--plot-dark) 80%, #314a22);
+      transform: translateX(-50%);
+    }
+    .plant .leaf, .plant .leaf::after {
+      position: absolute;
+      content: "";
+      width: 4px;
+      height: 2px;
+      border-radius: 100% 0 100% 0;
+      background: color-mix(in srgb, var(--plot-dark) 65%, #5c963e);
+    }
+    .plant .leaf { left: 47%; top: 62%; transform: rotate(20deg); }
+    .plant .leaf::after { left: -2px; top: 2px; transform: scaleX(-1) rotate(12deg); }
+    .flower-head {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      width: 35%;
+      height: 35%;
+      border-radius: 50%;
+      background: #ffd95c;
+      transform: translate(-50%, -50%);
+      box-shadow:
+        0 calc(var(--size) * -.20) 0 0 var(--tone),
+        calc(var(--size) * .19) calc(var(--size) * -.06) 0 0 var(--tone),
+        calc(var(--size) * .12) calc(var(--size) * .17) 0 0 var(--tone),
+        calc(var(--size) * -.12) calc(var(--size) * .17) 0 0 var(--tone),
+        calc(var(--size) * -.19) calc(var(--size) * -.06) 0 0 var(--tone);
+    }
+    .plant.spire .flower-head {
+      width: 22%;
+      height: 52%;
+      border-radius: 70% 30% 70% 30%;
+      background: var(--tone);
+      box-shadow:
+        calc(var(--size) * .17) calc(var(--size) * -.12) 0 -1px color-mix(in srgb, var(--tone) 80%, white),
+        calc(var(--size) * -.15) calc(var(--size) * .02) 0 -1px var(--tone),
+        calc(var(--size) * .15) calc(var(--size) * .16) 0 -1px color-mix(in srgb, var(--tone) 72%, white);
+    }
+    .plant.star .flower-head {
+      border-radius: 18% 50%;
+      background: var(--tone);
+      box-shadow:
+        0 calc(var(--size) * -.17) 0 -1px var(--tone),
+        calc(var(--size) * .17) 0 0 -1px var(--tone),
+        0 calc(var(--size) * .17) 0 -1px var(--tone),
+        calc(var(--size) * -.17) 0 0 -1px var(--tone);
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    .plant.bud .flower-head {
+      width: 48%;
+      height: 48%;
+      border-radius: 60% 60% 50% 50%;
+      background: var(--tone);
+      box-shadow: inset 2px -2px 0 rgb(93 36 35 / 12%);
+    }
+    .actions { display: flex; gap: 10px; margin-top: 17px; }
+    .preview {
+      flex: 1;
+      min-height: 51px;
+      border: 0;
+      border-radius: 17px;
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 0 color-mix(in srgb, var(--accent) 72%, #4a2940);
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .reset {
+      width: 51px;
+      border: 0;
+      border-radius: 17px;
+      background: #fff;
+      color: #625963;
+      box-shadow: 0 5px 16px rgb(65 44 24 / 10%);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .note { margin: 12px 0 0; color: #8b8189; text-align: center; font-size: 11px; }
+    .cottage { --accent: #df6452; --plot: #8fb85b; --plot-dark: #597b34; --scene: #dcefc7; }
+    .cottage .stage {
+      background:
+        radial-gradient(ellipse at 12% 102%, #8ebd68 0 19%, transparent 20%),
+        linear-gradient(#dff3ff 0 55%, #d7e8bd 56%);
+    }
+    .lavender { --accent: #8066c4; --plot: #829762; --plot-dark: #52633c; --scene: #e4dff2; }
+    .lavender .stage {
+      background:
+        linear-gradient(165deg, transparent 0 55%, rgb(103 79 151 / 12%) 56% 58%, transparent 59%),
+        linear-gradient(145deg, #f0ebf8, #d7cce9);
+    }
+    .desert { --accent: #dc7651; --plot: #c8a76c; --plot-dark: #967343; --scene: #f0d7ad; }
+    .desert .stage {
+      background:
+        radial-gradient(ellipse at 15% 92%, #c69c62 0 7%, transparent 8%),
+        radial-gradient(ellipse at 83% 18%, #fff0bd 0 25px, transparent 27px),
+        linear-gradient(#f4dfb9, #d5b37e);
+    }
+    .moss { --accent: #d97691; --plot: #638c57; --plot-dark: #345c3a; --scene: #bfd1b6; }
+    .moss .stage {
+      background:
+        radial-gradient(circle at 16% 78%, #678964 0 18px, transparent 19px),
+        radial-gradient(circle at 84% 16%, #759a70 0 26px, transparent 27px),
+        linear-gradient(145deg, #dce8d4, #a8c0a2);
+    }
+    .moss .plot { border-radius: 20px; }
+    @keyframes sprout {
+      0% { opacity: 0; transform: translate(-50%, -25%) scale(0) rotate(calc(var(--spin) - 15deg)); }
+      68% { opacity: 1; transform: translate(-50%, -54%) scale(1.22) rotate(calc(var(--spin) + 4deg)); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(var(--spin)); }
+    }
+    @keyframes wrong {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .board.wrong { animation: wrong .22s ease-in-out; }
+    @media (max-width: 820px) { .gallery { grid-template-columns: 1fr; } .card { min-height: auto; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">MeowBlock · Flower themes round 2</p>
+      <h1>Hoa hòa vào đất,<br />con số vẫn dẫn đường.</h1>
+      <p>
+        Bốn hướng mới dùng hoa nhỏ có thân, lá và nhiều dáng cánh. Mỗi cụm mọc ngẫu nhiên
+        theo chất liệu mảnh đất. Số điều kiện luôn nằm trên cùng, rõ ràng cả trước và sau khi hoa nở.
+      </p>
+      <div class="rules">
+        <span class="rule">Số điều kiện luôn hiển thị</span>
+        <span class="rule">Chỉ nở khi diện tích khớp số</span>
+        <span class="rule">Hoa nhỏ 7–14px, nhiều loại xen kẽ</span>
+        <span class="rule">Mảnh đất liền, không lộ đường ô</span>
+      </div>
+    </header>
+
+    <section class="gallery">
+      <article class="card cottage" data-theme="cottage" data-clue="6" data-clue-cell="5" data-preset-start="4" data-preset-end="9">
+        <div class="card-head"><div><span class="index">05</span><h2>Vườn Hoa Đồng Nội</h2><p class="copy">Cúc trắng, poppy đỏ và hoa vàng mọc lẫn trong thảm cỏ non.</p></div><span class="badge">Organic</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Vườn Hoa Đồng Nội"></div></div>
+        <div class="actions"><button class="preview">Vẽ khối đúng & xem hoa</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Số 6 vẫn nổi rõ giữa cụm hoa · Mật độ tự nhiên, không theo hàng</p>
+      </article>
+
+      <article class="card lavender" data-theme="lavender" data-clue="6" data-clue-cell="6" data-preset-start="1" data-preset-end="6">
+        <div class="card-head"><div><span class="index">06</span><h2>Đồi Oải Hương</h2><p class="copy">Những nhánh lavender nhỏ xen hoa kem, hòa cùng nền xanh xám dịu.</p></div><span class="badge">Elegant</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Đồi Oải Hương"></div></div>
+        <div class="actions"><button class="preview">Vẽ khối đúng & xem hoa</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Số 6 nằm trên một huy hiệu cùng tông đất · Hoa có dáng cành mảnh</p>
+      </article>
+
+      <article class="card desert" data-theme="desert" data-clue="8" data-clue-cell="5" data-preset-start="4" data-preset-end="11">
+        <div class="card-head"><div><span class="index">07</span><h2>Hoa Trên Cát</h2><p class="copy">Hoa sao, nụ cam và lá nhỏ nổi bật nhưng vẫn hòa với nền đất ấm.</p></div><span class="badge">Warm</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Hoa Trên Cát"></div></div>
+        <div class="actions"><button class="preview">Vẽ khối đúng & xem hoa</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Số 8 được giữ nguyên · Mật độ hoa thưa hơn, hợp cảnh khô</p>
+      </article>
+
+      <article class="card moss" data-theme="moss" data-clue="6" data-clue-cell="9" data-preset-start="8" data-preset-end="13">
+        <div class="card-head"><div><span class="index">08</span><h2>Thảm Rêu Bí Mật</h2><p class="copy">Hoa sao trắng hồng và chồi non mọc giữa thảm rêu sâu, mềm và mát.</p></div><span class="badge">Enchanted</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Thảm Rêu Bí Mật"></div></div>
+        <div class="actions"><button class="preview">Vẽ khối đúng & xem hoa</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Số 6 luôn ở lớp trên cùng · Hoa nhỏ có độ sáng vừa phải</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const palettes = {
+      cottage: {
+        colors: ['#fff8e8', '#e65e4e', '#ffd85b', '#f2a0a4'],
+        types: ['daisy', 'daisy', 'bud', 'star'],
+        density: 4.2
+      },
+      lavender: {
+        colors: ['#8c72cf', '#b49be8', '#f8ead1', '#6951aa'],
+        types: ['spire', 'spire', 'daisy', 'bud'],
+        density: 4.6
+      },
+      desert: {
+        colors: ['#e97848', '#f5bd4f', '#fff1c6', '#d85438'],
+        types: ['star', 'bud', 'star', 'daisy'],
+        density: 2.8
+      },
+      moss: {
+        colors: ['#fff9e8', '#f19bb1', '#d9d2ff', '#f7cad6'],
+        types: ['star', 'daisy', 'bud', 'star'],
+        density: 4.8
+      }
+    };
+
+    document.querySelectorAll('.card').forEach(card => {
+      const board = card.querySelector('.board');
+      const clueValue = Number(card.dataset.clue);
+      const clueCell = Number(card.dataset.clueCell);
+      let start = null, end = null, dragging = false;
+
+      for (let index = 0; index < 16; index++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = index;
+        if (index === clueCell) cell.textContent = clueValue;
+        board.appendChild(cell);
+      }
+
+      function rectangle(a, b) {
+        const ar = Math.floor(a / 4), ac = a % 4;
+        const br = Math.floor(b / 4), bc = b % 4;
+        const top = Math.min(ar, br), bottom = Math.max(ar, br);
+        const left = Math.min(ac, bc), right = Math.max(ac, bc);
+        const cells = [];
+        for (let row = top; row <= bottom; row++) {
+          for (let col = left; col <= right; col++) cells.push(row * 4 + col);
+        }
+        return { top, bottom, left, right, width: right - left + 1, height: bottom - top + 1, cells };
+      }
+
+      function reset() {
+        board.querySelectorAll('.plot,.plant,.clue').forEach(node => node.remove());
+        board.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selecting', 'filled'));
+        board.classList.remove('wrong');
+        start = null; end = null; dragging = false;
+      }
+
+      function previewSelection() {
+        board.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selecting'));
+        if (start === null || end === null) return;
+        rectangle(start, end).cells.forEach(index => board.children[index].classList.add('selecting'));
+      }
+
+      function addPlant(x, y, theme, order) {
+        const spec = palettes[theme];
+        const plant = document.createElement('div');
+        const type = spec.types[Math.floor(Math.random() * spec.types.length)];
+        plant.className = `plant ${type}`;
+        plant.innerHTML = '<span class="stem"></span><span class="leaf"></span><span class="flower-head"></span>';
+        plant.style.left = `${x}%`;
+        plant.style.top = `${y}%`;
+        plant.style.setProperty('--size', `${7 + Math.random() * 7}px`);
+        plant.style.setProperty('--spin', `${-18 + Math.random() * 36}deg`);
+        plant.style.setProperty('--tone', spec.colors[Math.floor(Math.random() * spec.colors.length)]);
+        plant.style.animationDelay = `${80 + order * 38 + Math.random() * 90}ms`;
+        board.appendChild(plant);
+      }
+
+      function complete(a, b) {
+        const rect = rectangle(a, b);
+        if (rect.cells.length !== clueValue || !rect.cells.includes(clueCell)) {
+          board.classList.remove('wrong');
+          void board.offsetWidth;
+          board.classList.add('wrong');
+          return;
+        }
+
+        reset();
+        rect.cells.forEach(index => board.children[index].classList.add('filled'));
+        const plot = document.createElement('div');
+        plot.className = 'plot';
+        plot.style.left = `${rect.left * 25 + .8}%`;
+        plot.style.top = `${rect.top * 25 + .8}%`;
+        plot.style.width = `${rect.width * 25 - 1.6}%`;
+        plot.style.height = `${rect.height * 25 - 1.6}%`;
+        board.appendChild(plot);
+
+        const theme = card.dataset.theme;
+        const spec = palettes[theme];
+        const count = Math.max(8, Math.round(rect.cells.length * spec.density));
+        for (let i = 0; i < count; i++) {
+          const x = (rect.left + .08 + Math.random() * (rect.width - .16)) * 25;
+          const y = (rect.top + .10 + Math.random() * (rect.height - .20)) * 25;
+          addPlant(x, y, theme, i);
+        }
+
+        const clue = document.createElement('div');
+        clue.className = 'clue';
+        clue.textContent = clueValue;
+        clue.style.left = `${((clueCell % 4) + .5) * 25}%`;
+        clue.style.top = `${(Math.floor(clueCell / 4) + .5) * 25}%`;
+        board.appendChild(clue);
+      }
+
+      board.addEventListener('pointerdown', event => {
+        const cell = event.target.closest('.cell');
+        if (!cell) return;
+        start = Number(cell.dataset.index);
+        end = start;
+        dragging = true;
+        board.setPointerCapture(event.pointerId);
+        previewSelection();
+      });
+      board.addEventListener('pointermove', event => {
+        if (!dragging) return;
+        const bounds = board.getBoundingClientRect();
+        const col = Math.max(0, Math.min(3, Math.floor((event.clientX - bounds.left) / bounds.width * 4)));
+        const row = Math.max(0, Math.min(3, Math.floor((event.clientY - bounds.top) / bounds.height * 4)));
+        end = row * 4 + col;
+        previewSelection();
+      });
+      board.addEventListener('pointerup', () => {
+        if (!dragging || start === null || end === null) return;
+        const a = start, b = end;
+        dragging = false;
+        complete(a, b);
+      });
+      card.querySelector('.preview').addEventListener('click', () => {
+        complete(Number(card.dataset.presetStart), Number(card.dataset.presetEnd));
+      });
+      card.querySelector('.reset').addEventListener('click', reset);
+    });
+  </script>
+</body>
+</html>

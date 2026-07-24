@@ -41,8 +41,17 @@ type PlacedBlock = {
   rect: Rect;
   color: string;
   flowerColor: string;
+  dogFace: number;
   answerIndex?: number;
 };
+type VisualTheme = "flower" | "dog";
+
+const DOG_TILES = [
+  "#f36b5e", "#ff9f43", "#f2c94c", "#68b96b", "#42aaa1", "#4d9be6",
+  "#7275d8", "#a66bd4", "#e66bac", "#ec7e86", "#cf8052", "#78a958",
+  "#45a8bf", "#617cc9", "#956dc1", "#d56994", "#e48b45", "#7aaf8e",
+];
+const DOG_FACE_COUNT = 18;
 
 const FLOWER_THEMES: FlowerTheme[] = [
   {
@@ -412,8 +421,29 @@ function Blossom({
   );
 }
 
+function DogFace({ variant }: { variant: number }) {
+  return (
+    <>
+      <span className="dog-ear dog-ear-left" />
+      <span className="dog-ear dog-ear-right" />
+      <span className="dog-face" data-face={variant}>
+        <i className="dog-brow dog-brow-left" />
+        <i className="dog-brow dog-brow-right" />
+        <i className="dog-eye dog-eye-left" />
+        <i className="dog-eye dog-eye-right" />
+        <i className="dog-nose" />
+        <i className="dog-mouth" />
+        <i className="dog-tongue" />
+        <i className="dog-cheek dog-cheek-left" />
+        <i className="dog-cheek dog-cheek-right" />
+      </span>
+    </>
+  );
+}
+
 export function MeowBlockGame() {
   const [screen, setScreen] = useState<"home" | "game">("home");
+  const [visualTheme, setVisualTheme] = useState<VisualTheme>("flower");
   const [currentLevel, setCurrentLevel] = useState(1);
   const [unlocked, setUnlocked] = useState(1);
   const [tutorialIndex, setTutorialIndex] = useState<number | null>(null);
@@ -452,6 +482,11 @@ export function MeowBlockGame() {
     );
     setShowWelcome(localStorage.getItem("meowblock-welcome") !== "yes");
     setSoundOn(localStorage.getItem("flowerblock-sound") !== "off");
+    setVisualTheme(
+      localStorage.getItem("flowerblock-visual-theme") === "dog"
+        ? "dog"
+        : "flower",
+    );
   }, []);
 
   useEffect(() => {
@@ -460,7 +495,7 @@ export function MeowBlockGame() {
     setDragStart(null);
     setDragEnd(null);
     setComplete(false);
-  }, [level.id, level.rows, level.cols]);
+  }, [level.id, level.rows, level.cols, visualTheme]);
 
   function playSound(kind: "place" | "remove" | "wrong" | "complete") {
     if (!soundOn) return;
@@ -526,6 +561,11 @@ export function MeowBlockGame() {
     localStorage.setItem("flowerblock-sound", next ? "on" : "off");
   }
 
+  function chooseVisualTheme(theme: VisualTheme) {
+    setVisualTheme(theme);
+    localStorage.setItem("flowerblock-visual-theme", theme);
+  }
+
   function startGame(levelId = currentLevel, tutorial = false) {
     setCurrentLevel(levelId);
     setTutorialIndex(tutorial ? 0 : null);
@@ -570,18 +610,32 @@ export function MeowBlockGame() {
       }
     }
     setOwners(nextOwners);
+    const palette = visualTheme === "dog" ? DOG_TILES : flowerTheme.tiles;
     const usedGroundColors = new Set(blocks.map((block) => block.color));
-    const availableThemeIndex = flowerTheme.tiles.findIndex(
+    const availableThemeIndex = palette.findIndex(
       (color) => !usedGroundColors.has(color),
     );
     const themeIndex =
-      availableThemeIndex >= 0 ? availableThemeIndex : blockId % flowerTheme.tiles.length;
+      availableThemeIndex >= 0 ? availableThemeIndex : blockId % palette.length;
+    const usedDogFaces = new Set(blocks.map((block) => block.dogFace));
+    const firstDogFace =
+      (Math.abs(level.id) * 7 + blockId * 5) % DOG_FACE_COUNT;
+    let dogFace = firstDogFace;
+    for (let offset = 0; offset < DOG_FACE_COUNT; offset++) {
+      const candidate = (firstDogFace + offset) % DOG_FACE_COUNT;
+      if (!usedDogFaces.has(candidate)) {
+        dogFace = candidate;
+        break;
+      }
+    }
     setBlocks((old) => [
       ...old,
       {
         rect,
-        color: flowerTheme.tiles[themeIndex],
-        flowerColor: flowerTheme.flowers[themeIndex],
+        color: palette[themeIndex],
+        flowerColor:
+          flowerTheme.flowers[themeIndex % flowerTheme.flowers.length],
+        dogFace,
         answerIndex,
       },
     ]);
@@ -777,6 +831,29 @@ export function MeowBlockGame() {
                 Một góc nhỏ cho trí óc được thảnh thơi.
               </p>
             </div>
+            <div className="theme-picker" aria-label="Chọn giao diện">
+              <p>Chọn theme để chơi</p>
+              <div className="theme-options">
+                <button
+                  className={`theme-option ${visualTheme === "flower" ? "selected" : ""}`}
+                  aria-pressed={visualTheme === "flower"}
+                  onClick={() => chooseVisualTheme("flower")}
+                >
+                  <span className="theme-preview flower-preview">✿</span>
+                  <span><b>Hoa</b><small>Vườn nhiều màu</small></span>
+                </button>
+                <button
+                  className={`theme-option dog-option ${visualTheme === "dog" ? "selected" : ""}`}
+                  aria-pressed={visualTheme === "dog"}
+                  onClick={() => chooseVisualTheme("dog")}
+                >
+                  <span className="theme-preview dog-preview">
+                    <i /><i /><em>•ᴗ•</em>
+                  </span>
+                  <span><b>Chó</b><small>Cún Kẹo Dẻo</small></span>
+                </button>
+              </div>
+            </div>
             <div className="level-hero">
               <p className="eyebrow">Hành trình hiện tại</p>
               <h2 className="level-number">
@@ -811,7 +888,13 @@ export function MeowBlockGame() {
             </div>
           </div>
         ) : (
-          <div className={`play-screen theme-${flowerTheme.key}`}>
+          <div
+            className={`play-screen ${
+              visualTheme === "dog"
+                ? "theme-dog"
+                : `theme-${flowerTheme.key}`
+            }`}
+          >
             <header className="topbar">
               <button
                 className="icon-btn"
@@ -827,7 +910,9 @@ export function MeowBlockGame() {
                     : `Hướng dẫn ${tutorialIndex + 1}/4`}
                 </strong>
                 {level.hard && <span className="hard-badge">Khó</span>}
-                <span className="theme-badge">{flowerTheme.name}</span>
+                <span className="theme-badge">
+                  {visualTheme === "dog" ? "Cún Kẹo Dẻo" : flowerTheme.name}
+                </span>
               </div>
               <button
                 className="icon-btn"
@@ -883,7 +968,7 @@ export function MeowBlockGame() {
                     const flowerCount = width * height * 3;
                     return (
                       <span
-                        className="block-plot"
+                        className={`block-plot ${visualTheme === "dog" ? "dog-block" : ""}`}
                         key={`${blockIndex}-${block.answerIndex ?? "free"}`}
                         style={{
                           "--tile": block.color,
@@ -894,19 +979,23 @@ export function MeowBlockGame() {
                           height: `calc(${(height / level.rows) * 100}% - 6px)`,
                         } as CSSProperties}
                       >
-                        {Array.from({ length: flowerCount }, (_, slot) => (
-                          <Blossom
-                            key={slot}
-                            theme={flowerTheme.key}
-                            slot={slot}
-                            seed={
-                              Math.abs(level.id) * 1009 +
-                              blockIndex * 97 +
-                              slot * 31
-                            }
-                            widthCells={width}
-                          />
-                        ))}
+                        {visualTheme === "dog" ? (
+                          <DogFace variant={block.dogFace} />
+                        ) : (
+                          Array.from({ length: flowerCount }, (_, slot) => (
+                            <Blossom
+                              key={slot}
+                              theme={flowerTheme.key}
+                              slot={slot}
+                              seed={
+                                Math.abs(level.id) * 1009 +
+                                blockIndex * 97 +
+                                slot * 31
+                              }
+                              widthCells={width}
+                            />
+                          ))
+                        )}
                       </span>
                     );
                   })}

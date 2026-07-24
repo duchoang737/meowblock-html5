@@ -505,3 +505,95 @@ button { font: inherit; }
     transition-duration: .01ms !important;
   }
 }
+
+/* Theme picker and Cún Kẹo Dẻo */
+.theme-picker { width: min(100%, 390px); margin: 25px auto 20px; }
+.theme-picker > p { margin: 0 0 9px; color: #8b7d79; font-size: 12px; font-weight: 900; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+.theme-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.theme-option { min-width: 0; padding: 9px 10px; display: flex; align-items: center; gap: 9px; border: 2px solid transparent; border-radius: 18px; background: #fff; color: #514858; box-shadow: 0 5px 15px rgb(74 52 18 / 9%); cursor: pointer; text-align: left; }
+.theme-option.selected { border-color: #f3a11c; background: #fff9e9; box-shadow: 0 5px 18px rgb(224 133 8 / 16%); }
+.theme-option > span:last-child { min-width: 0; display: grid; }
+.theme-option b { font-size: 14px; }
+.theme-option small { overflow: hidden; color: #91868f; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.theme-preview { position: relative; flex: 0 0 42px; width: 42px; height: 38px; display: grid; place-items: center; border-radius: 13px; }
+.flower-preview { background: linear-gradient(145deg, #8bc36c, #62a24d); color: #ffdd59; font-size: 26px; text-shadow: 0 1px 2px rgb(80 56 23 / 25%); }
+.dog-preview { background: linear-gradient(145deg, #ff9b8e, #ef6659); color: #87382f; box-shadow: inset 0 -5px 0 rgb(164 55 48 / 18%); }
+.dog-preview i { position: absolute; top: -3px; left: 5px; width: 13px; height: 9px; border-radius: 70% 55% 45% 35%; background: #ff9589; }
+.dog-preview i:nth-child(2) { left: 23px; width: 11px; transform: rotate(8deg); }
+.dog-preview em { margin-top: 4px; font-size: 11px; font-style: normal; font-weight: 1000; }
+.theme-dog { background: radial-gradient(circle at 84% 12%, #fff 0 2px, transparent 3px), linear-gradient(155deg, #fffaf2, #fff0df); }
+.theme-dog .theme-badge { color: #9a483c; background: #ffe1d8; }
+.theme-dog .board { border-color: #6e5a57; background: #e8ddd2; }
+.theme-dog .dog-block { overflow: visible; border: 3px solid rgb(255 255 255 / 66%); border-radius: clamp(13px, 3vw, 21px); background: radial-gradient(circle at 88% 12%, rgb(255 255 255 / 72%) 0 4px, transparent 5px), linear-gradient(155deg, color-mix(in srgb, var(--tile) 76%, white), var(--tile)); box-shadow: inset 0 -9px 0 color-mix(in srgb, var(--tile) 72%, #713a35), inset 0 4px 7px rgb(255 255 255 / 28%), 0 4px 8px rgb(68 42 36 / 23%); animation: dog-block-pop .48s cubic-bezier(.16,.9,.24,1.25); }
+.dog-ear { position: absolute; z-index: 5; top: 2px; width: clamp(13px, 5vw, 22px); height: clamp(8px, 3vw, 13px); border-radius: 75% 55% 50% 35%; background: color-mix(in srgb, var(--tile) 76%, white); box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--tile) 70%, #6f3833); }
+.dog-ear-left { left: 6px; transform: rotate(-8deg); }
+.dog-ear-right { left: clamp(25px, 8vw, 36px); width: clamp(11px, 4vw, 17px); height: clamp(7px, 2.7vw, 10px); top: 4px; transform: rotate(8deg); }
+.dog-face { position: absolute; z-index: 8; left: clamp(8px, 2.4vw, 12px); top: clamp(16px, 5vw, 22px); width: clamp(31px, 9vw, 43px); height: clamp(21px, 6vw, 28px); color: color-mix(in srgb, var(--tile) 55%, #4b2526); transform-origin: top left; }
+.dog-brow, .dog-eye, .dog-nose, .dog-mouth, .dog-tongue, .dog-cheek { position: absolute; display: block; }
+.dog-brow { top: 2px; width: 9px; height: 2px; border-radius: 99px; background: currentColor; }
+.dog-brow-left { left: 2px; transform: rotate(19deg); }
+.dog-brow-right { left: 24px; transform: rotate(-19deg); }
+.dog-eye { top: 6px; width: 5px; height: 7px; border-radius: 55%; background: currentColor; }
+.dog-eye-left { left: 5px; }
+.dog-eye-right { left: 25px; }
+.dog-nose { left: 16px; top: 12px; width: 7px; height: 5px; border-radius: 55% 55% 70% 70%; background: currentColor; }
+.dog-mouth { left: 14px; top: 17px; width: 12px; height: 6px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 12px 12px; }
+.dog-tongue { display: none; }
+.dog-cheek { top: 17px; width: 7px; height: 4px; border-radius: 50%; background: rgb(255 76 111 / 48%); }
+.dog-cheek-left { left: 0; }
+.dog-cheek-right { left: 32px; }
+.dog-face[data-face="1"] .dog-brow-left { transform: rotate(-18deg); }
+.dog-face[data-face="1"] .dog-brow-right { transform: rotate(18deg); }
+.dog-face[data-face="1"] .dog-mouth { height: 4px; border-radius: 0; transform: rotate(-3deg); }
+.dog-face[data-face="2"] .dog-eye { top: 8px; height: 2px; border-radius: 99px; }
+.dog-face[data-face="2"] .dog-brow { display: none; }
+.dog-face[data-face="2"] .dog-mouth { width: 9px; left: 15px; height: 4px; }
+.dog-face[data-face="3"] .dog-eye { width: 7px; height: 8px; border: 2px solid currentColor; background: transparent; }
+.dog-face[data-face="3"] .dog-eye-right { left: 24px; }
+.dog-face[data-face="3"] .dog-mouth { left: 16px; width: 7px; height: 7px; border: 2px solid currentColor; border-radius: 50%; }
+.dog-face[data-face="4"] .dog-eye-left { top: 8px; height: 2px; border-radius: 99px; }
+.dog-face[data-face="4"] .dog-mouth { transform: rotate(7deg); }
+.dog-face[data-face="5"] .dog-brow { display: none; }
+.dog-face[data-face="5"] .dog-eye { height: 4px; border-radius: 50% 50% 0 0; background: transparent; border: 2px solid currentColor; border-bottom: 0; }
+.dog-face[data-face="5"] .dog-mouth { width: 17px; left: 11px; height: 8px; }
+.dog-face[data-face="6"] .dog-brow { display: none; }
+.dog-face[data-face="6"] .dog-eye { width: 6px; height: 6px; }
+.dog-face[data-face="6"] .dog-cheek { width: 9px; background: rgb(255 63 104 / 65%); }
+.dog-face[data-face="6"] .dog-mouth { width: 7px; left: 16px; }
+.dog-face[data-face="7"] .dog-mouth { width: 14px; transform: rotate(-10deg); }
+.dog-face[data-face="7"] .dog-tongue { display: block; left: 18px; top: 21px; width: 6px; height: 6px; border-radius: 0 0 6px 6px; background: #f36f86; }
+.dog-face[data-face="8"] .dog-brow-left { transform: rotate(-25deg); }
+.dog-face[data-face="8"] .dog-brow-right { transform: rotate(25deg); }
+.dog-face[data-face="8"] .dog-mouth { border-bottom: 0; border-top: 2px solid currentColor; border-radius: 10px 10px 0 0; }
+.dog-face[data-face="9"] .dog-brow, .dog-face[data-face="9"] .dog-cheek { display: none; }
+.dog-face[data-face="9"] .dog-eye { height: 3px; border-radius: 99px; }
+.dog-face[data-face="9"] .dog-mouth { width: 8px; left: 16px; height: 3px; }
+.dog-face[data-face="10"] .dog-brow-left { transform: rotate(0); top: 0; }
+.dog-face[data-face="10"] .dog-brow-right { transform: rotate(-30deg); }
+.dog-face[data-face="10"] .dog-mouth { left: 17px; width: 10px; transform: rotate(8deg); }
+.dog-face[data-face="11"] .dog-eye-left { width: 7px; height: 7px; }
+.dog-face[data-face="11"] .dog-eye-right { top: 8px; height: 2px; }
+.dog-face[data-face="11"] .dog-mouth { border-radius: 50%; transform: rotate(14deg); }
+.dog-face[data-face="12"] .dog-brow { display: none; }
+.dog-face[data-face="12"] .dog-eye { top: 7px; height: 3px; border-radius: 99px; transform: rotate(18deg); }
+.dog-face[data-face="12"] .dog-eye-right { transform: rotate(-18deg); }
+.dog-face[data-face="12"] .dog-mouth { width: 18px; left: 11px; height: 9px; background: currentColor; }
+.dog-face[data-face="12"] .dog-tongue { display: block; left: 17px; top: 20px; width: 7px; height: 6px; border-radius: 0 0 7px 7px; background: #ff8ca0; }
+.dog-face[data-face="13"] .dog-eye-left { width: 7px; height: 9px; }
+.dog-face[data-face="13"] .dog-eye-right { width: 4px; height: 5px; top: 8px; }
+.dog-face[data-face="13"] .dog-mouth { width: 8px; left: 16px; transform: rotate(-8deg); }
+.dog-face[data-face="14"] .dog-brow { display: none; }
+.dog-face[data-face="14"] .dog-mouth { width: 10px; left: 15px; border-bottom: 0; border-top: 2px solid currentColor; border-radius: 8px 8px 0 0; }
+.dog-face[data-face="14"] .dog-cheek { display: none; }
+.dog-face[data-face="15"] .dog-eye-left { top: 8px; height: 2px; }
+.dog-face[data-face="15"] .dog-brow-left { display: none; }
+.dog-face[data-face="15"] .dog-mouth { width: 15px; left: 13px; }
+.dog-face[data-face="16"] .dog-brow { display: none; }
+.dog-face[data-face="16"] .dog-eye { width: 7px; height: 8px; box-shadow: inset 2px 2px 0 rgb(255 255 255 / 72%); }
+.dog-face[data-face="16"] .dog-mouth { width: 6px; left: 17px; }
+.dog-face[data-face="17"] .dog-brow-left { transform: rotate(28deg); }
+.dog-face[data-face="17"] .dog-brow-right { transform: rotate(-28deg); }
+.dog-face[data-face="17"] .dog-eye { width: 6px; height: 6px; }
+.dog-face[data-face="17"] .dog-mouth { height: 4px; border-radius: 0; }
+@keyframes dog-block-pop { from { opacity: 0; transform: scale(.78); } 70% { opacity: 1; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
+@media (max-height: 760px) { .brand { margin-top: 18px; } .theme-picker { margin: 16px auto 12px; } .wellness { margin-top: 12px; } }

@@ -683,7 +683,7 @@ export function MeowBlockGame() {
 
   return (
     <main className="game-shell">
-      <section className="phone" aria-label="Game MeowBlock">
+      <section className="phone" aria-label="Game Flower Block">
         {screen === "home" ? (
           <div className="home-screen">
             <div className="home-top">
@@ -700,7 +700,7 @@ export function MeowBlockGame() {
                 <span className="cat-face">•ᴗ•</span>
               </div>
               <h1 className="logo">
-                Meow<span>Block</span>
+                Flower<span>Block</span>
               </h1>
               <p className="tagline">
                 Một góc nhỏ cho trí óc được thảnh thơi.
@@ -920,7 +920,7 @@ export function MeowBlockGame() {
               <div className="dialog-icon">🐾</div>
               <h2>Chào mừng bạn!</h2>
               <p>
-                MeowBlock là câu đố không áp lực: không đồng hồ, không giới hạn
+                Flower Block là câu đố không áp lực: không đồng hồ, không giới hạn
                 lượt, chỉ có bạn và 100 màn logic.
               </p>
               <button
@@ -951,7 +951,7 @@ export function MeowBlockGame() {
                     ? "Bạn đã nắm được luật chơi cốt lõi."
                     : "Tiếp tục nhé, chỉ còn một chút nữa thôi."
                   : currentLevel === 100
-                    ? "Bạn đã hoàn thành toàn bộ hành trình MeowBlock."
+                    ? "Bạn đã hoàn thành toàn bộ hành trình Flower Block."
                     : `Màn ${currentLevel} đã được chia hoàn chỉnh.`}
               </p>
               <div className="dialog-row">

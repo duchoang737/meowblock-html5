@@ -1019,13 +1019,10 @@ export function MeowBlockGame() {
                   <button
                     key={id}
                     className={`level-chip ${id === currentLevel ? "current" : ""}`}
-                    disabled={id > unlocked}
                     onClick={() => startGame(id)}
-                    aria-label={
-                      id > unlocked ? `Màn ${id} đang khóa` : `Chơi màn ${id}`
-                    }
+                    aria-label={`Chơi màn ${id}`}
                   >
-                    {id > unlocked ? "•" : id}
+                    {id}
                   </button>
                 );
               })}

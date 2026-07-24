@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fff4e7" />
+  <title>Flower Block — 4 demo theme chó</title>
+  <style>
+    :root { --ink: #302a33; --muted: #786f76; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 7%, rgb(255 255 255 / 80%) 0 4px, transparent 5px),
+        linear-gradient(145deg, #fff9f1, #eadfd2);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 28px)); margin: auto; padding: 42px 0 72px; }
+    header { max-width: 830px; margin-bottom: 28px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #aa684f;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(38px, 6vw, 66px); line-height: .98; letter-spacing: -3px; }
+    header > p:last-of-type { max-width: 740px; color: var(--muted); line-height: 1.65; }
+    .rules { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
+    .rule {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 5px 15px rgb(73 48 27 / 8%);
+      color: #675e66;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .card {
+      --accent: #ef6958;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid rgb(75 52 35 / 8%);
+      border-radius: 31px;
+      background: #fffdf9;
+      box-shadow: 0 20px 58px rgb(67 48 28 / 11%);
+    }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+    .index {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 1000;
+    }
+    h2 { margin: 12px 0 4px; font-size: 27px; letter-spacing: -1px; }
+    .copy { max-width: 355px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: color-mix(in srgb, var(--accent) 77%, #332934);
+      background: color-mix(in srgb, var(--accent) 14%, white);
+      font-size: 10px;
+      font-weight: 1000;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .stage {
+      min-height: 410px;
+      margin-top: 19px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 25px;
+      background:
+        radial-gradient(ellipse at 10% 100%, #92bb72 0 17%, transparent 17.5%),
+        linear-gradient(#e5f3f9 0 47%, #dceaca 48%);
+    }
+    .board {
+      position: relative;
+      width: min(88%, 340px);
+      aspect-ratio: 1;
+      overflow: hidden;
+      border: 3px solid #504850;
+      border-radius: 17px;
+      background:
+        linear-gradient(rgb(255 255 255 / 75%), rgb(255 255 255 / 75%)),
+        repeating-linear-gradient(90deg, transparent 0 19.7%, #d9d1cc 20%),
+        repeating-linear-gradient(0deg, transparent 0 19.7%, #d9d1cc 20%);
+      box-shadow: 0 17px 36px rgb(48 36 27 / 17%);
+    }
+    .dog-plot {
+      --tile: #ef705b;
+      --dark: #ba4238;
+      position: absolute;
+      z-index: 3;
+      overflow: hidden;
+      border: 3px solid rgb(255 255 255 / 66%);
+      border-radius: 19px;
+      background:
+        radial-gradient(circle at 88% 12%, rgb(255 255 255 / 72%) 0 4px, transparent 5px),
+        linear-gradient(155deg, color-mix(in srgb, var(--tile) 76%, white), var(--tile));
+      box-shadow:
+        inset 0 -9px 0 color-mix(in srgb, var(--dark) 52%, transparent),
+        inset 0 4px 7px rgb(255 255 255 / 28%),
+        0 4px 8px rgb(68 42 36 / 23%);
+      transform: scale(.78);
+      opacity: 0;
+      animation: plot-pop .5s cubic-bezier(.16,.9,.24,1.25) forwards;
+    }
+    .ear {
+      position: absolute;
+      z-index: 5;
+      top: 3px;
+      background: color-mix(in srgb, var(--tile) 76%, white);
+      box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--dark) 38%, transparent);
+    }
+    .ear.left { left: 7px; }
+    .ear.right { left: 36px; }
+    .face {
+      position: absolute;
+      z-index: 8;
+      left: 12px;
+      top: 22px;
+      width: 43px;
+      height: 27px;
+      color: color-mix(in srgb, var(--dark) 76%, #45292b);
+    }
+    .eye, .brow, .mouth, .nose, .cheek {
+      position: absolute;
+      display: block;
+    }
+    .eye {
+      top: 6px;
+      width: 6px;
+      height: 7px;
+      border-radius: 55% 55% 48% 48%;
+      background: currentColor;
+    }
+    .eye.left { left: 5px; }
+    .eye.right { left: 25px; }
+    .nose {
+      left: 16px;
+      top: 12px;
+      width: 7px;
+      height: 5px;
+      border-radius: 55% 55% 70% 70%;
+      background: currentColor;
+    }
+    .mouth {
+      left: 14px;
+      top: 17px;
+      width: 12px;
+      height: 7px;
+      border: 2px solid currentColor;
+      border-top: 0;
+      border-radius: 0 0 12px 12px;
+    }
+    .cheek {
+      top: 17px;
+      width: 7px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgb(255 102 125 / 50%);
+    }
+    .cheek.left { left: 1px; }
+    .cheek.right { right: 3px; }
+    .clue {
+      position: absolute;
+      z-index: 12;
+      right: 10px;
+      bottom: 9px;
+      color: color-mix(in srgb, var(--dark) 82%, #33272a);
+      text-shadow: 0 1px 0 rgb(255 255 255 / 36%);
+      font-size: clamp(15px, 4.5vw, 23px);
+      font-weight: 1000;
+    }
+    .jelly { --accent: #ef6958; }
+    .jelly .ear {
+      width: 22px;
+      height: 13px;
+      border-radius: 75% 55% 50% 35%;
+      transform: rotate(-8deg);
+    }
+    .jelly .ear.right { width: 17px; height: 10px; top: 5px; transform: rotate(8deg); }
+    .jelly .brow {
+      top: 3px;
+      width: 10px;
+      height: 3px;
+      border-radius: 99px;
+      background: currentColor;
+    }
+    .jelly .brow.left { left: 2px; transform: rotate(24deg); }
+    .jelly .brow.right { left: 24px; transform: rotate(-24deg); }
+    .jelly .mouth { height: 5px; border-radius: 0; transform: rotate(0deg); }
+    .corgi { --accent: #e89438; }
+    .corgi .dog-plot { border-radius: 17px 24px 20px 20px; }
+    .corgi .ear {
+      width: 20px;
+      height: 22px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      border-radius: 6px;
+    }
+    .corgi .ear.right { left: 35px; width: 17px; height: 19px; top: 5px; }
+    .corgi .eye { height: 3px; top: 9px; border-radius: 99px; }
+    .corgi .mouth { background: #f56f82; border-radius: 0 0 9px 9px; }
+    .pudding { --accent: #9d765d; }
+    .pudding .dog-plot { border-radius: 26px; }
+    .pudding .ear {
+      width: 17px;
+      height: 31px;
+      border-radius: 70% 35% 70% 45%;
+      transform: rotate(10deg);
+    }
+    .pudding .ear.right { left: 36px; width: 14px; height: 26px; transform: rotate(-6deg); }
+    .pudding .eye { height: 2px; top: 9px; border-radius: 99px; }
+    .pudding .mouth { width: 8px; left: 16px; height: 4px; }
+    .moonpup {
+      --accent: #8b69da;
+      color: #f3efff;
+      background: #17162a;
+      border-color: rgb(142 105 228 / 20%);
+    }
+    .moonpup .copy { color: #aaa5bd; }
+    .moonpup .tag { color: #d8c1ff; background: rgb(146 102 235 / 15%); }
+    .moonpup .stage {
+      background:
+        radial-gradient(circle at 84% 15%, #fffbdc 0 27px, #c9c8e8 28px 31px, transparent 32px),
+        linear-gradient(145deg, #0f1124, #262145);
+    }
+    .moonpup .board { border-color: #78709e; background-color: #17182f; box-shadow: 0 0 28px rgb(152 100 255 / 22%); }
+    .moonpup .dog-plot {
+      border-color: color-mix(in srgb, var(--tile) 42%, white);
+      box-shadow:
+        inset 0 -9px 0 rgb(0 0 0 / 22%),
+        inset 0 0 0 2px color-mix(in srgb, var(--tile) 55%, white),
+        0 0 12px var(--tile);
+    }
+    .moonpup .ear {
+      width: 18px;
+      height: 22px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 0 4px var(--tile));
+    }
+    .moonpup .ear.right { left: 34px; width: 15px; height: 18px; top: 5px; }
+    .moonpup .face { color: #fff; filter: drop-shadow(0 0 3px var(--tile)); }
+    .moonpup .eye { background: #fff; box-shadow: 0 0 5px #fff; }
+    .moonpup .clue { color: #fff; text-shadow: 0 0 5px var(--tile); }
+    .actions { display: grid; grid-template-columns: 1fr 50px; gap: 10px; margin-top: 16px; }
+    .grow, .reset {
+      min-height: 50px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 1000;
+    }
+    .grow { color: white; background: var(--accent); box-shadow: 0 6px 0 color-mix(in srgb, var(--accent) 70%, #42303a); }
+    .reset { color: #665f67; background: #f2ebe4; font-size: 19px; }
+    .moonpup .reset { color: #ddd8f4; background: #292640; }
+    .note { margin: 12px 0 0; color: #8b838a; text-align: center; font-size: 11px; }
+    .moonpup .note { color: #918ba8; }
+    @keyframes plot-pop {
+      0% { opacity: 0; transform: scale(.72) translateY(9px); }
+      72% { opacity: 1; transform: scale(1.04) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @media (max-width: 820px) { .gallery { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">Flower Block · Dog theme study 17–20</p>
+      <h1>Block chó, mặt nhỏ ở góc trái.</h1>
+      <p>
+        Bốn hướng bám sát hình mẫu game gốc: khối bóng, bo tròn, tai nằm sát mép trên bên trái
+        và khuôn mặt nhỏ không che diện tích chơi. Đây chỉ là trang duyệt; game chính chưa thay đổi.
+      </p>
+      <div class="rules">
+        <span class="rule">Mặt nhỏ ở góc trái</span>
+        <span class="rule">Tai tụ ở mép trên trái</span>
+        <span class="rule">Số điều kiện luôn rõ</span>
+        <span class="rule">Mảnh block liền, không đường ô</span>
+      </div>
+    </header>
+
+    <section class="gallery">
+      <article class="card jelly" data-theme="jelly">
+        <div class="card-head"><div><span class="index">17</span><h2>Cún Kẹo Dẻo</h2><p class="copy">Gần ảnh mẫu nhất: khối bóng, tai tròn, mặt nhỏ hơi phụng phịu.</p></div><span class="tag">Gần game gốc</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Cún Kẹo Dẻo"></div></div>
+        <div class="actions"><button class="grow">Vẽ block chó</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Bóng và chắc · Biểu cảm phụng phịu nhỏ ở góc trái</p>
+      </article>
+
+      <article class="card corgi" data-theme="corgi">
+        <div class="card-head"><div><span class="index">18</span><h2>Corgi Tinh Nghịch</h2><p class="copy">Tai tam giác, mắt cười và bảng màu cam kem ấm áp.</p></div><span class="tag">Playful</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Corgi Tinh Nghịch"></div></div>
+        <div class="actions"><button class="grow">Vẽ block chó</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Dễ thương, vui · Nhìn rõ tai ngay cả trên block nhỏ</p>
+      </article>
+
+      <article class="card pudding" data-theme="pudding">
+        <div class="card-head"><div><span class="index">19</span><h2>Cún Pudding</h2><p class="copy">Tai rủ mềm, mắt lim dim và chất liệu lì như bánh pudding.</p></div><span class="tag">Cozy</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Cún Pudding"></div></div>
+        <div class="actions"><button class="grow">Vẽ block chó</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Êm và thư giãn · Hợp với tinh thần chơi không áp lực</p>
+      </article>
+
+      <article class="card moonpup" data-theme="moonpup">
+        <div class="card-head"><div><span class="index">20</span><h2>Cún Ánh Trăng</h2><p class="copy">Khối chó phát sáng nhẹ, tai nhọn và đôi mắt sáng trên nền đêm.</p></div><span class="tag">Night</span></div>
+        <div class="stage"><div class="board" aria-label="Demo Cún Ánh Trăng"></div></div>
+        <div class="actions"><button class="grow">Đánh thức cún</button><button class="reset" aria-label="Làm lại">↻</button></div>
+        <p class="note">Tương phản cao · Có thể ghép với Vườn Trăng hiện tại</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const layouts = [
+      { clue: 6, left: 0, top: 0, width: 3, height: 2 },
+      { clue: 6, left: 3, top: 0, width: 2, height: 3 },
+      { clue: 9, left: 0, top: 2, width: 3, height: 3 },
+      { clue: 4, left: 3, top: 3, width: 2, height: 2 }
+    ];
+    const palettes = {
+      jelly: [
+        { tile: '#f26354', dark: '#b83932' }, { tile: '#f3a43c', dark: '#b66422' },
+        { tile: '#5faae4', dark: '#2e6da9' }, { tile: '#a477d7', dark: '#65439a' }
+      ],
+      corgi: [
+        { tile: '#e99a39', dark: '#a65a20' }, { tile: '#f0bf5b', dark: '#a87824' },
+        { tile: '#e97c56', dark: '#a84431' }, { tile: '#79b98a', dark: '#3e7b51' }
+      ],
+      pudding: [
+        { tile: '#bd8e66', dark: '#765039' }, { tile: '#d6aa72', dark: '#8e653e' },
+        { tile: '#9d7fbd', dark: '#5f477c' }, { tile: '#70aaa1', dark: '#386f67' }
+      ],
+      moonpup: [
+        { tile: '#8057dd', dark: '#39216f' }, { tile: '#d554b5', dark: '#772362' },
+        { tile: '#367ed0', dark: '#183f75' }, { tile: '#2f9f91', dark: '#155f57' }
+      ]
+    };
+
+    function faceMarkup(theme) {
+      return `<span class="ear left"></span><span class="ear right"></span>
+        <span class="face">
+          <i class="brow left"></i><i class="brow right"></i>
+          <i class="eye left"></i><i class="eye right"></i>
+          <i class="nose"></i><i class="mouth"></i>
+          <i class="cheek left"></i><i class="cheek right"></i>
+        </span>`;
+    }
+
+    document.querySelectorAll('.card').forEach((card, cardIndex) => {
+      const board = card.querySelector('.board');
+      const theme = card.dataset.theme;
+      let timers = [];
+
+      function addPlot(layout, index) {
+        const style = palettes[theme][index];
+        const plot = document.createElement('span');
+        plot.className = 'dog-plot';
+        plot.style.setProperty('--tile', style.tile);
+        plot.style.setProperty('--dark', style.dark);
+        plot.style.left = `calc(${layout.left * 20}% + 3px)`;
+        plot.style.top = `calc(${layout.top * 20}% + 3px)`;
+        plot.style.width = `calc(${layout.width * 20}% - 6px)`;
+        plot.style.height = `calc(${layout.height * 20}% - 6px)`;
+        plot.style.animationDelay = `${index * 85}ms`;
+        plot.innerHTML = `${faceMarkup(theme)}<strong class="clue">${layout.clue}</strong>`;
+        board.appendChild(plot);
+      }
+
+      function reset() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        board.querySelectorAll('.dog-plot').forEach(node => node.remove());
+      }
+
+      function grow() {
+        reset();
+        layouts.forEach((layout, index) => {
+          timers.push(setTimeout(() => addPlot(layout, index), index * 260));
+        });
+      }
+
+      card.querySelector('.grow').addEventListener('click', grow);
+      card.querySelector('.reset').addEventListener('click', reset);
+      timers.push(setTimeout(grow, 240 + cardIndex * 170));
+    });
+  </script>
+</body>
+</html>

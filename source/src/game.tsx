@@ -346,7 +346,9 @@ function cellFromPointer(
 }
 
 function themeForLevel(levelId: number) {
-  const index = (Math.max(1, Math.abs(levelId)) - 1) % FLOWER_THEMES.length;
+  const normalizedLevel = Math.max(1, Math.abs(levelId));
+  const index =
+    Math.floor((normalizedLevel - 1) / 5) % FLOWER_THEMES.length;
   return FLOWER_THEMES[index];
 }
 
@@ -506,7 +508,12 @@ export function MeowBlockGame() {
       }
     }
     setOwners(nextOwners);
-    const themeIndex = blockId % flowerTheme.tiles.length;
+    const usedGroundColors = new Set(blocks.map((block) => block.color));
+    const availableThemeIndex = flowerTheme.tiles.findIndex(
+      (color) => !usedGroundColors.has(color),
+    );
+    const themeIndex =
+      availableThemeIndex >= 0 ? availableThemeIndex : blockId % flowerTheme.tiles.length;
     setBlocks((old) => [
       ...old,
       {

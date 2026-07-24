@@ -420,6 +420,7 @@ export function MeowBlockGame() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showLevels, setShowLevels] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
   const [blocks, setBlocks] = useState<PlacedBlock[]>([]);
   const [owners, setOwners] = useState<number[]>([]);
   const [dragStart, setDragStart] =
@@ -430,6 +431,7 @@ export function MeowBlockGame() {
   const [hints, setHints] = useState(5);
   const [toast, setToast] = useState("");
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const level = useMemo(
     () =>
@@ -449,6 +451,7 @@ export function MeowBlockGame() {
       Math.max(0, Number(localStorage.getItem("meowblock-hints")) || 5),
     );
     setShowWelcome(localStorage.getItem("meowblock-welcome") !== "yes");
+    setSoundOn(localStorage.getItem("flowerblock-sound") !== "off");
   }, []);
 
   useEffect(() => {
@@ -459,10 +462,68 @@ export function MeowBlockGame() {
     setComplete(false);
   }, [level.id, level.rows, level.cols]);
 
+  function playSound(kind: "place" | "remove" | "wrong" | "complete") {
+    if (!soundOn) return;
+    const context = audioContextRef.current ?? new AudioContext();
+    audioContextRef.current = context;
+    if (context.state === "suspended") void context.resume();
+
+    const tones = {
+      place: [
+        { frequency: 520, delay: 0, duration: .12, volume: .045, type: "sine" },
+        { frequency: 720, delay: .07, duration: .16, volume: .04, type: "sine" },
+      ],
+      remove: [
+        { frequency: 390, delay: 0, duration: .1, volume: .035, type: "triangle" },
+        { frequency: 250, delay: .06, duration: .13, volume: .03, type: "triangle" },
+      ],
+      wrong: [
+        { frequency: 175, delay: 0, duration: .13, volume: .035, type: "square" },
+      ],
+      complete: [
+        { frequency: 523, delay: 0, duration: .18, volume: .045, type: "sine" },
+        { frequency: 659, delay: .1, duration: .2, volume: .045, type: "sine" },
+        { frequency: 784, delay: .2, duration: .3, volume: .05, type: "sine" },
+      ],
+    }[kind] as Array<{
+      frequency: number;
+      delay: number;
+      duration: number;
+      volume: number;
+      type: OscillatorType;
+    }>;
+
+    tones.forEach((tone) => {
+      const start = context.currentTime + tone.delay;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = tone.type;
+      oscillator.frequency.setValueAtTime(tone.frequency, start);
+      gain.gain.setValueAtTime(.0001, start);
+      gain.gain.exponentialRampToValueAtTime(tone.volume, start + .015);
+      gain.gain.exponentialRampToValueAtTime(.0001, start + tone.duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(start + tone.duration + .02);
+    });
+  }
+
   function say(message: string) {
     setToast(message);
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(""), 1800);
+  }
+
+  function reject(message: string) {
+    playSound("wrong");
+    say(message);
+  }
+
+  function toggleSound() {
+    const next = !soundOn;
+    setSoundOn(next);
+    localStorage.setItem("flowerblock-sound", next ? "on" : "off");
   }
 
   function startGame(levelId = currentLevel, tutorial = false) {
@@ -491,6 +552,7 @@ export function MeowBlockGame() {
     if (!done) return;
     window.setTimeout(() => {
       setComplete(true);
+      playSound("complete");
       if (tutorialIndex === null) {
         const next = Math.min(100, currentLevel + 1);
         setUnlocked((old) => Math.max(old, next));
@@ -523,6 +585,7 @@ export function MeowBlockGame() {
         answerIndex,
       },
     ]);
+    playSound("place");
     finishIfReady(nextOwners);
   }
 
@@ -538,6 +601,7 @@ export function MeowBlockGame() {
     });
     setBlocks(kept);
     setOwners(nextOwners);
+    playSound("remove");
     say("Đã gỡ khối");
   }
 
@@ -555,11 +619,11 @@ export function MeowBlockGame() {
       .filter((owner) => owner >= 0);
     if (existing.length) {
       if (area === 1) removeBlock(existing[0]);
-      else say("Vùng này đang có một khối khác");
+      else reject("Vùng này đang có một khối khác");
       return;
     }
     if (selectedIndexes.some((index) => level.blocked.has(index))) {
-      say("Không thể phủ ô bị chặn");
+      reject("Không thể phủ ô bị chặn");
       return;
     }
 
@@ -567,7 +631,7 @@ export function MeowBlockGame() {
       contains(rect, clue.row, clue.col),
     );
     if (clues.length !== 1) {
-      say(
+      reject(
         clues.length
           ? "Mỗi khối chỉ được chứa một số"
           : "Khối cần chứa một số",
@@ -576,16 +640,16 @@ export function MeowBlockGame() {
     }
     const clue = clues[0];
     if (clue.kind === "sealed" && blocks.length < (clue.unlock ?? 2)) {
-      say(`Hãy chia đúng ${clue.unlock} khối để mở niêm phong`);
+      reject(`Hãy chia đúng ${clue.unlock} khối để mở niêm phong`);
       return;
     }
     if (clue.kind === "mystery") {
       if (!sameRect(rect, clue.rect)) {
-        say("Số đang ẩn — hãy suy luận từ vùng còn lại");
+        reject("Số đang ẩn — hãy suy luận từ vùng còn lại");
         return;
       }
     } else if (area !== clue.area) {
-      say(`Cần đúng ${clue.area} ô, bạn đang chọn ${area}`);
+      reject(`Cần đúng ${clue.area} ô, bạn đang chọn ${area}`);
       return;
     }
     if (clue.kind === "shape") {
@@ -593,7 +657,7 @@ export function MeowBlockGame() {
       const height = rect.bottom - rect.top + 1;
       const actual = width === height ? "■" : width > height ? "H" : "V";
       if (actual !== clue.shape) {
-        say(
+        reject(
           clue.shape === "H"
             ? "Khối phải nằm ngang"
             : clue.shape === "V"
@@ -689,6 +753,13 @@ export function MeowBlockGame() {
             <div className="home-top">
               <button
                 className="icon-btn"
+                aria-label={soundOn ? "Tắt âm thanh" : "Bật âm thanh"}
+                onClick={toggleSound}
+              >
+                {soundOn ? "🔊" : "🔇"}
+              </button>
+              <button
+                className="icon-btn"
                 aria-label="Cài đặt"
                 onClick={() => setShowHelp(true)}
               >
@@ -758,6 +829,13 @@ export function MeowBlockGame() {
                 {level.hard && <span className="hard-badge">Khó</span>}
                 <span className="theme-badge">{flowerTheme.name}</span>
               </div>
+              <button
+                className="icon-btn"
+                aria-label={soundOn ? "Tắt âm thanh" : "Bật âm thanh"}
+                onClick={toggleSound}
+              >
+                {soundOn ? "🔊" : "🔇"}
+              </button>
               <button
                 className="icon-btn"
                 aria-label="Hướng dẫn"

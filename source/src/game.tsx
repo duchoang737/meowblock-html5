@@ -966,6 +966,18 @@ export function MeowBlockGame() {
                     const width = block.rect.right - block.rect.left + 1;
                     const height = block.rect.bottom - block.rect.top + 1;
                     const flowerCount = width * height * 3;
+                    const blockClue = level.clues.find((clue) =>
+                      contains(block.rect, clue.row, clue.col),
+                    );
+                    const blockClueRevealed =
+                      blockClue?.kind !== "sealed" ||
+                      blocks.length >= (blockClue.unlock ?? 2);
+                    const blockClueLabel =
+                      blockClue?.kind === "mystery"
+                        ? "?"
+                        : blockClue?.kind === "sealed" && !blockClueRevealed
+                          ? `🔒${blockClue.unlock}`
+                          : (blockClue?.area ?? "");
                     return (
                       <span
                         className={`block-plot ${visualTheme === "dog" ? "dog-block" : ""}`}
@@ -980,7 +992,14 @@ export function MeowBlockGame() {
                         } as CSSProperties}
                       >
                         {visualTheme === "dog" ? (
-                          <DogFace variant={block.dogFace} />
+                          <>
+                            <DogFace variant={block.dogFace} />
+                            {blockClue && (
+                              <strong className="dog-block-clue">
+                                {blockClueLabel}
+                              </strong>
+                            )}
+                          </>
                         ) : (
                           Array.from({ length: flowerCount }, (_, slot) => (
                             <Blossom
@@ -1045,7 +1064,9 @@ export function MeowBlockGame() {
                             } as CSSProperties
                           : undefined}
                       >
-                        {clue && <span className="clue-value">{label}</span>}
+                        {clue && !(visualTheme === "dog" && owner >= 0) && (
+                          <span className="clue-value">{label}</span>
+                        )}
                       </div>
                     );
                   },

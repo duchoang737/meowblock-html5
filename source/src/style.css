@@ -542,6 +542,24 @@ button { font: inherit; }
 .dog-cheek { top: 17px; width: 7px; height: 4px; border-radius: 50%; background: rgb(255 76 111 / 48%); }
 .dog-cheek-left { left: 0; }
 .dog-cheek-right { left: 32px; }
+.dog-block-clue {
+  position: absolute;
+  z-index: 12;
+  left: clamp(8px, 2.4vw, 12px);
+  bottom: clamp(7px, 2vw, 10px);
+  min-width: clamp(21px, 6vw, 29px);
+  min-height: clamp(21px, 6vw, 29px);
+  padding: 2px 5px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgb(255 255 255 / 82%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tile) 62%, white);
+  color: color-mix(in srgb, var(--tile) 48%, #33272a);
+  box-shadow: 0 3px 8px rgb(54 35 32 / 23%);
+  font-size: clamp(10px, 3vw, 16px);
+  line-height: 1;
+}
 .dog-face[data-face="1"] .dog-brow-left { transform: rotate(-18deg); }
 .dog-face[data-face="1"] .dog-brow-right { transform: rotate(18deg); }
 .dog-face[data-face="1"] .dog-mouth { height: 4px; border-radius: 0; transform: rotate(-3deg); }

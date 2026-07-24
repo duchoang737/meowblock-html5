@@ -30,7 +30,7 @@ type Level = {
   hard: boolean;
   predict: number;
 };
-type FlowerThemeKey = "silk" | "cosmos" | "jewel" | "moon";
+type FlowerThemeKey = "silk" | "cosmos" | "jewel" | "moon" | "mochi";
 type FlowerTheme = {
   key: FlowerThemeKey;
   name: string;
@@ -93,7 +93,21 @@ const FLOWER_THEMES: FlowerTheme[] = [
       "#ff7694", "#8eff83", "#c68aff", "#64bfff", "#e77aff", "#77ddff",
     ],
   },
+  {
+    key: "mochi",
+    name: "Mèo Mochi",
+    tiles: [
+      "#f2a45f", "#ee8596", "#e8bd5d", "#8fc7b4", "#91add8", "#bd95d3",
+      "#ef9a79", "#83bf8f", "#d794b6", "#9da5d5", "#c9aa79", "#79bcc7",
+    ],
+    flowers: [
+      "#fff1a8", "#ffe1ea", "#fff0a0", "#e0fff2", "#e8efff", "#f6e8ff",
+      "#ffe8d8", "#e8ffe7", "#ffe4f2", "#ebeaff", "#fff1d4", "#e2fbff",
+    ],
+  },
 ];
+const MOCHI_FACES = ["•ᴗ•", "ᵔ⩊ᵔ", "•ﻌ•", "◕ᴗ◕", "•ω•", "ᵔᴥᵔ"];
+
 const SUCCESS = [
   "Hoàn hảo!", "Xuất sắc!", "Làm được rồi!", "Không thể cản!",
   "Thiên tài!", "Kinh ngạc!", "Tuyệt vời!",
@@ -369,7 +383,9 @@ function Blossom({
   const size = (28 + random() * 14) / widthCells;
   const spin = -28 + random() * 56;
   const outerCount =
-    theme === "silk" ? 5 : theme === "cosmos" ? 8 : theme === "jewel" ? 10 : 7;
+    theme === "silk" || theme === "mochi"
+      ? 5
+      : theme === "cosmos" ? 8 : theme === "jewel" ? 10 : 7;
   const outerRadius = theme === "cosmos" ? 6.1 : theme === "jewel" ? 6.3 : 5;
   const outerRy = theme === "cosmos" ? 6.4 : theme === "jewel" ? 4.7 : 5.8;
   const outerRx = theme === "cosmos" ? 2.4 : theme === "jewel" ? 2.3 : 3.5;
@@ -880,7 +896,11 @@ export function MeowBlockGame() {
                   {blocks.map((block, blockIndex) => {
                     const width = block.rect.right - block.rect.left + 1;
                     const height = block.rect.bottom - block.rect.top + 1;
-                    const flowerCount = width * height * 3;
+                    const area = width * height;
+                    const flowerCount =
+                      flowerTheme.key === "mochi"
+                        ? Math.max(1, Math.round(area * 1.15))
+                        : area * 3;
                     return (
                       <span
                         className="block-plot"
@@ -907,6 +927,11 @@ export function MeowBlockGame() {
                             widthCells={width}
                           />
                         ))}
+                        {flowerTheme.key === "mochi" && (
+                          <span className="block-face">
+                            {MOCHI_FACES[(blockIndex + Math.abs(level.id)) % MOCHI_FACES.length]}
+                          </span>
+                        )}
                       </span>
                     );
                   })}
